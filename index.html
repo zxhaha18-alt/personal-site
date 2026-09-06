@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>周迅 Lora · AI 产品经理</title>
+<meta name="description" content="周迅 Lora · AI 产品经理。深度内容出身，做模型评测与归因、搜索与 RAG、Agent Harness 与可控性；字节、百度、AI 初创四段实习，业余用 AI Coding 上线 5 个产品。">
+<style>
+/* ============ 基础变量 ============ */
+:root{
+  --cream:#F8ECE0;
+  --paper:#FFFCD9;
+  --red:#EF4B4C;
+  --deep:#E62826;
+  --ink:#151311;
+  --grey:#F0F0F0;
+  --serif:"问藏书房","Songti SC","STSong","Noto Serif CJK SC","Source Han Serif SC",serif;
+  --sans:"阿里巴巴普惠体 3.0 55 Regular L3","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --display:"Haettenschweiler","Arial Narrow","Impact","Anton",var(--serif);
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:auto}
+body{
+  background:var(--cream);color:var(--ink);font-family:var(--sans);
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+body.lock{overflow:hidden;height:100vh}
+a{color:inherit;text-decoration:none}
+img{-webkit-user-drag:none;user-select:none}
+.sticker.s-qr .qr{pointer-events:none}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+::selection{background:var(--red);color:var(--paper)}
+
+/* 纸张颗粒 */
+.grain{
+  position:fixed;inset:-50%;z-index:9000;pointer-events:none;opacity:.05;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/></filter><rect width='120' height='120' filter='url(%23n)'/></svg>");
+  animation:grain 6s steps(6) infinite;
+}
+@keyframes grain{
+  0%{transform:translate(0,0)}20%{transform:translate(-3%,2%)}40%{transform:translate(2%,-3%)}
+  60%{transform:translate(-2%,-2%)}80%{transform:translate(3%,3%)}100%{transform:translate(0,0)}
+}
+/* ============ 自定义光标 ============ */
+.cursor{
+  position:fixed;top:0;left:0;width:14px;height:14px;border-radius:50%;
+  background:var(--red);z-index:9500;pointer-events:none;
+  transform:translate(-50%,-50%);transition:width .3s var(--ease),height .3s var(--ease),background .3s;
+  mix-blend-mode:normal;
+}
+.cursor.big{width:88px;height:88px;background:rgba(239,75,76,.9)}
+.cursor .clabel{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  color:var(--paper);font-size:12px;letter-spacing:.1em;opacity:0;transition:opacity .2s;
+  font-family:var(--serif);
+}
+.cursor.big .clabel{opacity:1}
+.cursor-ring{
+  position:fixed;top:0;left:0;width:38px;height:38px;border:1px solid var(--ink);
+  border-radius:50%;z-index:9490;pointer-events:none;transform:translate(-50%,-50%);opacity:.5;
+}
+@media (hover:none){.cursor,.cursor-ring{display:none}}
+
+/* ============ 开场 ============ */
+#preloader{
+  position:fixed;inset:0;z-index:9800;background:var(--ink);color:var(--cream);
+  display:flex;align-items:flex-end;justify-content:space-between;padding:6vw;
+  transition:transform 1.1s var(--ease);
+}
+#preloader.done{transform:translateY(-101%)}
+#preloader .pl-num{font-family:var(--display);font-size:26vw;line-height:.8;letter-spacing:-.02em}
+#preloader .pl-side{text-align:right;font-family:var(--serif);font-size:14px;line-height:2;letter-spacing:.2em}
+#preloader .pl-bar{position:absolute;left:6vw;right:6vw;bottom:4vw;height:1px;background:rgba(248,236,224,.25)}
+#preloader .pl-bar i{display:block;height:100%;width:0;background:var(--red)}
+
+/* ============ 通用排版 ============ */
+.wrap{width:min(1320px,90vw);margin:0 auto}
+.eyebrow{
+  font-family:var(--serif);font-size:12px;letter-spacing:.34em;text-transform:uppercase;
+  display:flex;align-items:center;gap:10px;color:var(--red);
+}
+.eyebrow::before{content:"";width:26px;height:1px;background:var(--red)}
+.h-huge{font-family:var(--serif);font-weight:400;line-height:.94;letter-spacing:-.01em}
+.sect{position:relative;padding:16vh 0}
+.reveal{overflow:hidden;display:block}
+.reveal.done{overflow:visible}
+.ch{display:inline-block;transition:transform .35s var(--ease),color .35s}
+.ch:hover{transform:translateY(-14px) rotate(-5deg);color:var(--red)}
+.reveal>span{display:block;transform:translateY(110%);transition:transform 1s var(--ease)}
+.in .reveal>span,.reveal.in>span{transform:translateY(0)}
+.fade{opacity:0;transform:translateY(26px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.fade.in{opacity:1;transform:none}
+/* ============ 顶栏 / 菜单 ============ */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:8000;display:flex;align-items:center;
+  justify-content:space-between;padding:18px 5vw;gap:20px;
+  transition:background .4s var(--ease),box-shadow .4s var(--ease),padding .4s var(--ease);
+}
+.topbar.float{
+  background:rgba(248,236,224,.82);backdrop-filter:blur(10px);padding:12px 5vw;
+  box-shadow:0 1px 0 rgba(21,19,17,.12);
+}
+.brand{display:flex;align-items:center;gap:8px;font-family:var(--serif);font-size:18px;letter-spacing:.06em}
+.brand .ast{width:16px;height:16px;animation:spin 9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.brand small{font-family:var(--sans);font-size:10px;letter-spacing:.2em;opacity:.55;margin-left:2px}
+
+/* 顶部悬浮板块导航 */
+.topnav{
+  display:flex;align-items:center;gap:4px;padding:4px 4px 4px 8px;border:1.5px solid var(--ink);border-radius:999px;
+  background:rgba(255,252,217,.72);backdrop-filter:blur(6px);
+}
+.nav-apple{width:20px;height:20px;object-fit:contain;margin-right:2px;animation:navbob 4.5s ease-in-out infinite}
+@keyframes navbob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-3px) rotate(5deg)}}
+.topnav a{
+  padding:7px 15px;border-radius:999px;font-size:12px;letter-spacing:.16em;
+  transition:background .35s var(--ease),color .35s var(--ease);
+}
+.topnav a:hover{background:var(--ink);color:var(--paper)}
+.topnav a.act{background:var(--red);color:var(--paper)}
+@media(max-width:860px){.topnav{display:none}}
+.topbar .status{font-size:11px;letter-spacing:.22em;opacity:.6}
+.menu-btn{display:flex;align-items:center;gap:10px;font-size:12px;letter-spacing:.22em}
+.menu-btn .bars{display:grid;gap:4px}
+.menu-btn .bars i{display:block;width:22px;height:1.5px;background:var(--ink);transition:transform .4s var(--ease)}
+.menu-btn:hover .bars i:first-child{transform:translateX(5px)}
+
+#menu{
+  position:fixed;inset:0;z-index:8500;background:var(--deep);color:var(--paper);
+  clip-path:circle(0% at 92% 5%);transition:clip-path 1s var(--ease);
+  display:flex;flex-direction:column;justify-content:center;padding:0 8vw;
+}
+#menu.open{clip-path:circle(150% at 92% 5%)}
+#menu ol{list-style:none}
+#menu li{overflow:hidden}
+#menu li a{
+  display:block;font-family:var(--serif);font-size:clamp(38px,7vw,104px);line-height:1.12;
+  transform:translateY(110%);transition:transform .8s var(--ease),opacity .4s;
+}
+#menu.open li a{transform:translateY(0)}
+#menu li a:hover{opacity:.55;font-style:italic}
+#menu li a small{font-family:var(--sans);font-size:12px;letter-spacing:.2em;vertical-align:super;opacity:.6}
+#menu .m-close{position:absolute;top:22px;right:5vw;font-size:12px;letter-spacing:.22em}
+#menu .m-foot{position:absolute;bottom:5vh;left:8vw;right:8vw;display:flex;gap:30px;font-size:12px;letter-spacing:.16em;opacity:.7;flex-wrap:wrap}
+
+/* ============ HERO ============ */
+#hero{min-height:100vh;position:relative;display:flex;align-items:center;overflow:hidden;padding:14vh 0 12vh}
+.hero-grid{width:min(1320px,90vw);margin:0 auto;position:relative;z-index:3}
+.hero-kicker{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:18px}
+.chip{
+  border:1px solid var(--ink);border-radius:999px;padding:7px 15px;font-size:11px;
+  letter-spacing:.18em;background:var(--paper);
+}
+.chip.red{background:var(--red);color:var(--paper);border-color:var(--red)}
+.hero-title{font-size:clamp(46px,9.2vw,148px)}
+.hero-title em{font-style:italic;color:var(--red)}
+.hero-title .sm{font-size:.34em;letter-spacing:.02em;display:inline-block;vertical-align:middle}
+.hero-strap{
+  margin-top:20px;font-family:var(--serif);font-size:clamp(10px,.95vw,13px);
+  letter-spacing:.2em;color:var(--red);line-height:1.9;
+}
+.hero-sub{margin-top:16px;max-width:42ch;font-size:14px;line-height:2.1;opacity:.78}
+.hero-intro{
+  margin-top:20px;max-width:54ch;padding-left:18px;border-left:2px solid var(--red);
+  font-size:13.5px;line-height:2.05;
+}
+.hero-intro p+p{margin-top:12px}
+.hero-intro b,.hero-intro .jb{font-family:var(--serif);font-weight:400;color:var(--red);font-size:1.08em;letter-spacing:.04em}
+.hero-intro .jb{border-bottom:1px dashed var(--red);cursor:pointer;transition:background .3s}
+.hero-intro .jb:hover{background:rgba(239,75,76,.12)}
+.pickme{
+  font-family:var(--serif);color:var(--red);font-style:italic;font-size:1.1em;
+  display:inline-block;transform:rotate(-3deg);margin-left:2px;
+}
+.hero-bottom{
+  position:absolute;left:0;right:0;bottom:5vh;width:min(1320px,90vw);margin:0 auto;
+  display:flex;justify-content:space-between;align-items:flex-end;gap:20px;z-index:3;
+}
+.scrollhint{font-size:11px;letter-spacing:.24em;display:flex;align-items:center;gap:10px}
+.scrollhint i{display:block;width:1px;height:44px;background:var(--ink);position:relative;overflow:hidden}
+.scrollhint i::after{content:"";position:absolute;inset:0;background:var(--red);animation:drip 1.8s var(--ease) infinite}
+.resume-link{
+  font-size:12px;letter-spacing:.18em;border:1.5px solid var(--ink);border-radius:999px;
+  padding:9px 18px;background:var(--paper);transition:background .35s var(--ease),color .35s var(--ease);
+}
+.resume-link:hover{background:var(--red);color:var(--paper);border-color:var(--red)}
+@keyframes drip{0%{transform:translateY(-100%)}60%,100%{transform:translateY(100%)}}
+
+/* 主视觉：作品集原生苹果素材 */
+.fruit-stage{position:absolute;inset:0;z-index:1;pointer-events:none}
+.fruit{
+  position:absolute;top:54%;right:3vw;width:min(33vw,420px);aspect-ratio:1/1;
+  transform:translateY(-50%);pointer-events:auto;cursor:pointer;
+}
+.fruit .apple{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
+  filter:drop-shadow(0 36px 60px rgba(230,40,38,.16));
+  animation:float 9s ease-in-out infinite;
+  opacity:0;transition:opacity .35s var(--ease);
+}
+.fruit .apple.on{opacity:1}
+.fruit.chew .apple.on{animation:float 9s ease-in-out infinite,chew .6s var(--ease)}
+@keyframes chew{0%{scale:1}30%{scale:1.09 .93}60%{scale:.96 1.05}100%{scale:1}}
+.fruit .sparkle{
+  position:absolute;inset:-12%;width:124%;height:124%;object-fit:contain;
+  animation:twinkle 14s linear infinite;
+}
+.fruit .sparkle.s2{inset:-20%;width:140%;height:140%;opacity:.7;scale:-1 1;rotate:12deg;animation:twinkle2 22s linear infinite}
+
+/* 苹果梗与叶子：跟着苹果一起浮动 */
+.stemwrap{position:absolute;inset:0;z-index:2;animation:float 9s ease-in-out infinite;pointer-events:none}
+.stemwrap .stem{
+  position:absolute;left:44%;top:-2.5%;width:11px;height:17%;background:#57331D;
+  border-radius:7px 7px 3px 3px;transform-origin:bottom center;
+  animation:sway 5s ease-in-out infinite;
+}
+.stemwrap .leaf{
+  position:absolute;left:48.5%;top:1.5%;width:17%;height:8.5%;background:#439F62;
+  border-radius:0 100% 0 100%;transform-origin:0% 100%;
+  animation:leafsway 5s ease-in-out infinite;
+}
+.stemwrap .leaf::after{
+  content:"";position:absolute;left:12%;top:52%;width:70%;height:1.5px;background:rgba(255,255,255,.5);
+  transform:rotate(-14deg);
+}
+@keyframes sway{0%,100%{transform:rotate(9deg)}50%{transform:rotate(-5deg)}}
+@keyframes leafsway{0%,100%{transform:rotate(-6deg) scale(1)}50%{transform:rotate(4deg) scale(1.04)}}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-1.2deg)}50%{transform:translateY(-22px) rotate(1.4deg)}}
+@keyframes twinkle{0%{transform:rotate(0) scale(1);opacity:.9}50%{transform:rotate(6deg) scale(1.04);opacity:1}100%{transform:rotate(0) scale(1);opacity:.9}}
+@keyframes twinkle2{0%{transform:rotate(0) scale(1)}50%{transform:rotate(-8deg) scale(1.06)}100%{transform:rotate(0) scale(1)}}
+
+/* 贴在苹果上的标签：hover 时散开 */
+.alabels{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:grid;gap:10px;justify-items:center;z-index:3}
+.alabel{
+  background:var(--paper);border:1.5px solid var(--ink);border-radius:3px;padding:7px 15px;
+  font-family:var(--serif);font-size:13px;letter-spacing:.14em;white-space:nowrap;
+  box-shadow:3px 3px 0 var(--ink);transition:transform .6s var(--ease),opacity .4s;
+}
+.alabel.green{background:#439F62;color:var(--paper);font-size:12px;letter-spacing:.1em}
+.alabel:nth-child(1){transform:rotate(-2.5deg)}
+.alabel:nth-child(2){transform:rotate(1.5deg)}
+.alabel:nth-child(3){transform:rotate(-1deg)}
+.alabel:nth-child(4){transform:rotate(2deg)}
+.fruit:hover .alabel:nth-child(1){transform:translate(-62px,-36px) rotate(-11deg)}
+.fruit:hover .alabel:nth-child(2){transform:translate(58px,-14px) rotate(7deg)}
+.fruit:hover .alabel:nth-child(3){transform:translate(-48px,12px) rotate(-6deg)}
+.fruit:hover .alabel:nth-child(4){transform:translate(48px,38px) rotate(5deg)}
+.bite-toast{
+  position:absolute;left:50%;top:8%;transform:translate(-50%,-14px) rotate(-4deg);
+  background:var(--red);color:var(--paper);border:1.5px solid var(--ink);border-radius:3px;
+  padding:6px 13px;font-family:var(--serif);font-size:13px;letter-spacing:.12em;white-space:nowrap;
+  box-shadow:3px 3px 0 var(--ink);opacity:0;transition:opacity .35s,transform .5s var(--ease);z-index:4;
+}
+.bite-toast.show{opacity:1;transform:translate(-50%,-30px) rotate(-4deg)}
+/* 可拖拽贴纸 */
+.sticker{
+  position:absolute;z-index:4;cursor:grab;user-select:none;will-change:transform;
+  transition:box-shadow .3s;
+}
+.sticker:active{cursor:grabbing}
+.sticker .face{
+  padding:9px 17px;border:1.5px solid var(--ink);border-radius:3px;background:var(--paper);
+  font-family:var(--serif);font-size:14px;letter-spacing:.14em;white-space:nowrap;box-shadow:4px 4px 0 var(--ink);
+}
+.sticker.s-red .face{background:var(--red);color:var(--paper);border-color:var(--ink)}
+.sticker.s-qr{width:120px;height:120px;padding:8px;background:var(--paper);border:1.5px solid var(--ink);box-shadow:5px 5px 0 var(--ink)}
+.sticker.s-qr .qr{width:100%;height:100%;display:block}
+.sticker.s-qr .qrtip{
+  position:absolute;bottom:-22px;left:0;font-size:10px;letter-spacing:.14em;opacity:.65;
+  white-space:nowrap;border-bottom:1px solid transparent;
+}
+.sticker.s-qr .qrtip:hover{opacity:1;color:var(--red);border-bottom-color:var(--red)}
+.sticker.s-ast{width:74px;height:74px}
+.sticker.s-ast svg{width:100%;height:100%;animation:spin 12s linear infinite}
+.sticker.s-tag .face{
+  border-radius:4px;box-shadow:4px 4px 0 var(--red);font-family:var(--serif);font-size:13px;letter-spacing:.1em;
+}
+.drag-note{position:absolute;font-size:10px;letter-spacing:.2em;opacity:.5;transform:translateY(26px)}
+
+/* ============ 跑马灯 ============ */
+.marquee{
+  background:var(--red);color:var(--paper);border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink);
+  overflow:hidden;padding:16px 0;white-space:nowrap;position:relative;z-index:5;
+}
+.marquee .track{display:inline-flex;gap:44px;will-change:transform;font-family:var(--serif);font-size:clamp(20px,3.2vw,42px)}
+.marquee .track span{display:inline-flex;align-items:center;gap:44px}
+.marquee.alt{background:var(--ink);color:var(--paper)}
+
+/* ============ 说明书 SPEC ============ */
+#spec{background:var(--cream)}
+.spec-head{
+  display:grid;grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr);
+  gap:5vw;align-items:end;margin-bottom:6vh;
+}
+.spec-head h2{font-size:clamp(34px,5.6vw,80px)}
+.spec-head h2 em{font-style:normal;color:var(--red)}
+.spec-sub{margin-top:14px;font-family:var(--serif);font-size:12px;letter-spacing:.2em;opacity:.55}
+.spec-stats{display:flex;flex-wrap:wrap;gap:26px;margin-top:30px;padding-top:20px;border-top:1.5px solid var(--ink)}
+.spec-stats div{min-width:104px}
+.spec-stats b{display:block;font-family:var(--serif);font-size:clamp(22px,2.4vw,32px);line-height:1;color:var(--red)}
+.spec-stats span{display:block;margin-top:7px;font-size:11px;letter-spacing:.14em;opacity:.6}
+@media(max-width:900px){.spec-head{grid-template-columns:1fr;gap:5vh}}
+
+/* 右上角总结卡 */
+.sumcard{
+  max-width:42ch;border:1.5px solid var(--ink);border-radius:4px;background:var(--paper);
+  padding:20px 22px;box-shadow:6px 6px 0 var(--ink);
+}
+.sum-t{font-family:var(--serif);font-size:11px;letter-spacing:.22em;color:var(--red);margin-bottom:10px}
+.sum-lead{font-size:13px;line-height:2}
+.sum-lead b{font-weight:400;font-family:var(--serif);border-bottom:2px solid var(--red)}
+.sum-list{margin-top:14px;border-top:1px dashed rgba(21,19,17,.25);padding-top:12px;display:grid;gap:8px}
+.sum-list div{display:flex;align-items:baseline;gap:8px;font-size:12px;line-height:1.8}
+.sum-list div span:first-child{opacity:.62;flex:1}
+.sum-list div i{font-style:normal;color:var(--red)}
+.sum-list div span:last-child{font-family:var(--serif);letter-spacing:.04em;flex:1}
+.spec-list{border-top:1.5px solid var(--ink);position:relative}
+/* 左侧苹果游标：随滚动往下走，越往下越被吃掉 */
+.rail{position:absolute;left:-38px;top:0;width:30px;height:30px;pointer-events:none}
+.rail img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 4px 8px rgba(230,40,38,.25))}
+@media(max-width:1180px){.rail{display:none}}
+.spec-row{
+  position:relative;border-bottom:1.5px solid var(--ink);padding:26px 0;cursor:pointer;overflow:hidden;
+}
+.spec-row .bg{position:absolute;inset:0;background:var(--red);transform:translateY(101%);transition:transform .55s var(--ease);z-index:0}
+.spec-row:hover .bg,.spec-row.open .bg{transform:translateY(0)}
+.spec-row .line{position:relative;z-index:1;display:flex;align-items:baseline;gap:24px;transition:color .4s}
+.spec-row:hover .line,.spec-row.open .line{color:var(--paper)}
+.spec-row .no{font-family:var(--display);font-size:14px;letter-spacing:.14em;opacity:.6;width:44px;flex:none;position:relative}
+.spec-row .no::after{
+  content:"";position:absolute;left:-2px;top:22px;width:22px;height:22px;opacity:0;
+  background:url("assets/apple-half.png") center/contain no-repeat;
+  filter:drop-shadow(0 0 4px rgba(255,252,217,.95));
+  transform:translateY(-6px) rotate(-8deg);transition:opacity .4s,transform .45s var(--ease);
+}
+.spec-row:hover .no::after,.spec-row.open .no::after{opacity:1;transform:translateY(0) rotate(0)}
+.spec-row .k{font-family:var(--serif);font-size:clamp(20px,2.6vw,36px);flex:none}
+.spec-row .k i{font-style:italic;font-size:.42em;letter-spacing:.08em;opacity:.55;margin-left:8px}
+.spec-row .v{margin-left:auto;text-align:right;flex:none;min-width:210px}
+.spec-row .v b{
+  display:block;font-family:var(--serif);font-weight:400;font-size:clamp(24px,2.6vw,38px);
+  line-height:1;color:var(--red);letter-spacing:-.01em;transition:color .4s;
+}
+.spec-row .v i{display:block;font-style:normal;font-size:11.5px;letter-spacing:.12em;opacity:.66;margin-top:6px}
+.spec-row .v em{
+  display:inline-block;font-style:normal;font-size:10.5px;letter-spacing:.1em;margin-top:8px;
+  border:1px solid rgba(21,19,17,.3);border-radius:999px;padding:3px 9px;opacity:.7;
+}
+.spec-row:hover .v b,.spec-row.open .v b{color:var(--paper)}
+.spec-row:hover .v i,.spec-row.open .v i{opacity:.85}
+.spec-row:hover .v em,.spec-row.open .v em{border-color:rgba(255,252,217,.55);opacity:.9}
+.spec-row .more{
+  position:relative;z-index:1;max-height:0;overflow:hidden;transition:max-height .6s var(--ease),opacity .4s;
+  opacity:0;color:var(--paper);font-size:13px;line-height:2;padding-left:68px;max-width:76ch;
+}
+.spec-row:hover .more,.spec-row.open .more{max-height:420px;opacity:.95;margin-top:16px}
+.spec-row .more .tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.spec-row .more .tags span{
+  border:1px solid rgba(255,252,217,.6);border-radius:999px;padding:4px 11px;font-size:11px;letter-spacing:.1em;
+}
+.spec-row .more .org{
+  display:inline-block;margin-top:14px;background:var(--paper);color:var(--ink);
+  padding:5px 12px;border-radius:3px;font-family:var(--serif);font-size:12px;letter-spacing:.12em;
+  transform:rotate(-1.5deg);box-shadow:3px 3px 0 rgba(21,19,17,.5);
+}
+
+/* 时间轴：横向 */
+.tl{margin-top:6vh;padding-top:22px}
+.tl-head{display:flex;justify-content:space-between;font-size:11px;letter-spacing:.22em;opacity:.55;margin-bottom:26px}
+.tl-line{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;position:relative;padding-top:40px}
+.tl-line::before{
+  content:"";position:absolute;top:13px;left:6px;right:6px;height:1.5px;
+  background:repeating-linear-gradient(90deg,rgba(21,19,17,.45) 0 6px,transparent 6px 12px);
+}
+.tl-item{position:relative;padding-right:16px}
+.tl-item .dot{
+  position:absolute;top:-40px;left:0;width:14px;height:14px;border-radius:50%;
+  border:1.5px solid var(--ink);background:var(--cream);transition:transform .4s var(--ease),background .4s;
+}
+.tl-item.now .dot{width:30px;height:30px;top:-48px;left:-8px;border:none;background:none;animation:float 6s ease-in-out infinite}
+.tl-item.now .dot img{width:100%;height:100%;object-fit:contain}
+.tl-item:hover .dot{background:var(--red);border-color:var(--red);transform:scale(1.3)}
+.tl-item b{display:block;font-family:var(--display);font-weight:400;font-size:12px;letter-spacing:.14em;opacity:.6}
+.tl-item .org{display:block;font-family:var(--serif);font-size:clamp(17px,1.6vw,23px);margin-top:8px}
+.tl-item .role{display:block;font-size:11.5px;line-height:1.8;letter-spacing:.04em;opacity:.66;margin-top:6px}
+.tl-item.now .org{color:var(--red)}
+
+/* 学业 */
+.edu{margin-top:9vh}
+.edu-head{display:flex;justify-content:space-between;font-size:11px;letter-spacing:.22em;opacity:.55;padding-bottom:14px;border-bottom:1.5px solid var(--ink)}
+.edu-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5px;background:var(--ink);border:1.5px solid var(--ink);border-top:none}
+.edu-card{background:var(--cream);padding:28px 26px 26px;transition:background .4s}
+.edu-card:hover{background:var(--paper)}
+.edu-top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px}
+.deg{font-family:var(--serif);font-size:clamp(19px,2vw,26px)}
+.degt{margin-top:8px;font-size:11px;letter-spacing:.14em;opacity:.55}
+.gpa{display:flex;align-items:baseline;gap:8px;flex:none}
+.gpa b{font-family:var(--serif);font-weight:400;font-size:clamp(30px,3.6vw,48px);line-height:1;color:var(--red)}
+.gpa span{font-size:11px;letter-spacing:.12em;opacity:.6}
+.gpa em{display:block;font-style:normal;margin-top:5px;font-family:var(--serif);letter-spacing:.1em;opacity:.9}
+.edu-card ul{list-style:none;margin-top:20px;display:grid;gap:9px}
+.edu-card li{font-size:12.5px;letter-spacing:.04em;opacity:.75;padding-left:16px;position:relative;line-height:1.7}
+.edu-card li::before{content:"";position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--red)}
+.edu-foot{
+  display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:20px;
+}
+.edu-foot .ef-t{font-family:var(--serif);font-size:11px;letter-spacing:.2em;color:var(--red);margin-right:6px}
+.edu-foot span:not(.ef-t){
+  border:1px solid rgba(21,19,17,.35);border-radius:999px;padding:6px 13px;font-size:11.5px;letter-spacing:.1em;opacity:.75;
+}
+@media(max-width:900px){.edu-grid{grid-template-columns:1fr}}
+@media(max-width:900px){
+  .tl-line{grid-template-columns:1fr;gap:0;padding-top:0}
+  .tl-line::before{display:none}
+  .tl-item{padding:16px 0 16px 26px;border-bottom:1px dashed rgba(21,19,17,.25)}
+  .tl-item .dot{top:22px;left:0}
+  .tl-item.now .dot{top:14px;left:-6px}
+}
+@media(max-width:860px){
+  .spec-row .more{padding-left:0}
+  .spec-row .v{min-width:0}
+}
+
+/* ============ 横向陈列 WORKS ============ */
+#works{background:var(--ink);color:var(--cream);padding:0}
+.hscroll{height:420vh;position:relative}
+.hstick{position:sticky;top:0;height:100vh;overflow:hidden;display:flex;flex-direction:column;justify-content:center;gap:3vh}
+.hhead{position:relative;padding:0 5vw;display:flex;justify-content:space-between;align-items:flex-end;gap:30px;flex-wrap:wrap}
+.hhead h2{font-size:clamp(28px,4.2vw,58px);font-family:var(--serif)}
+.hhead .hnote{margin-top:12px;max-width:52ch;font-size:12.5px;line-height:1.95;opacity:.7}
+.hhead .hnote b{font-weight:400;color:var(--red);font-family:var(--serif);font-size:1.06em}
+.hhead .count{font-family:var(--display);font-size:13px;letter-spacing:.2em;opacity:.6;flex:none}
+.htrack{display:flex;gap:2.4vw;padding:0 5vw;will-change:transform;align-items:flex-start}
+.card{
+  flex:none;width:min(30vw,400px);cursor:pointer;
+  display:flex;flex-direction:column;min-height:min(72vh,600px);height:auto;
+}
+.card .thumb{
+  position:relative;aspect-ratio:4/3;background:var(--cream);overflow:hidden;
+  border:1.5px solid var(--cream);flex:none;
+}
+.card .thumb img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  transition:transform .8s var(--ease);
+}
+.card:hover .thumb img{transform:scale(1.06)}
+.card .prob{
+  margin-top:12px;font-size:12.5px;line-height:1.9;opacity:.72;
+}
+.card .ins{
+  margin-top:12px;font-size:12.5px;line-height:1.95;padding-left:12px;
+  border-left:2px solid var(--red);
+}
+.card .ins b{font-weight:400;font-family:var(--serif);color:var(--red);letter-spacing:.06em}
+.card .ptags{display:flex;flex-wrap:wrap;gap:7px;margin-top:auto;padding-top:14px}
+.card .ptags span{
+  border:1px solid rgba(248,236,224,.35);border-radius:999px;padding:4px 10px;
+  font-size:10.5px;letter-spacing:.1em;opacity:.75;
+}
+.card .thumb .ph{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(90% 70% at 30% 20%,rgba(239,75,76,.9),transparent 60%),
+    linear-gradient(160deg,#F8ECE0,#FFFCD9 60%,#F0F0F0);
+  transform:scale(1.02);transition:transform .8s var(--ease),filter .6s;
+}
+.card:hover .thumb .ph{transform:scale(1.08) rotate(1deg)}
+.card .thumb .tape{
+  position:absolute;top:14px;left:-6px;padding:6px 14px;background:var(--red);color:var(--paper);
+  font-size:11px;letter-spacing:.18em;transform:rotate(-3deg);border:1.5px solid var(--ink);
+}
+.card .meta{display:flex;justify-content:space-between;margin-top:14px;font-size:12px;letter-spacing:.14em;opacity:.75}
+.card h3{font-family:var(--serif);font-size:clamp(20px,2.2vw,30px);margin-top:8px}
+.card .barfill{height:1px;background:rgba(248,236,224,.3);margin-top:14px;position:relative;flex:none}
+.card .barfill i{position:absolute;left:0;top:0;height:100%;width:0;background:var(--red);transition:width .6s var(--ease)}
+.card:hover .barfill i{width:100%}
+/* ============ 刮刮乐 / 探照灯揭示 ============ */
+#scratch{position:relative;background:var(--paper);padding:0}
+.scr-stage{height:100vh;position:relative;overflow:hidden;display:grid;place-items:center;cursor:crosshair}
+.scr-layer{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:0 8vw}
+.scr-front{background:var(--paper);z-index:2}
+.scr-back{background:var(--deep);color:var(--paper);z-index:3;
+  -webkit-mask-image:radial-gradient(circle var(--r,0px) at var(--x,50%) var(--y,50%),#000 98%,transparent 100%);
+  mask-image:radial-gradient(circle var(--r,0px) at var(--x,50%) var(--y,50%),#000 98%,transparent 100%);
+}
+.scr-layer h2{font-family:var(--serif);font-size:clamp(30px,6vw,86px);line-height:1.15}
+.scr-layer p{margin-top:18px;font-size:13px;letter-spacing:.16em;opacity:.7}
+.scr-apple{
+  position:absolute;right:5vw;bottom:6vh;width:min(24vw,270px);object-fit:contain;
+  animation:float 11s ease-in-out infinite;
+}
+.scr-tip{position:absolute;bottom:6vh;left:0;right:0;text-align:center;font-size:11px;letter-spacing:.24em;z-index:4;color:var(--ink);opacity:.45}
+
+/* AI 产品认知圆盘 */
+.think{padding:11vh 0 14vh}
+.think-head{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;font-size:11px;letter-spacing:.2em;opacity:.55;padding-bottom:16px;border-bottom:1.5px solid var(--ink)}
+.think-intro{display:grid;grid-template-columns:.9fr 1.1fr;gap:5vw;padding:6vh 0 5vh;align-items:end}
+.think-intro h3{font-family:var(--serif);font-size:clamp(28px,4vw,54px);font-weight:400;line-height:1.2}
+.think-intro p{font-size:13px;line-height:2.05;opacity:.72;max-width:58ch}
+.think-map{display:grid;grid-template-columns:minmax(330px,.85fr) minmax(0,1.15fr);gap:1.5px;background:var(--ink);border:1.5px solid var(--ink)}
+.orbit{position:relative;min-height:590px;background:var(--paper);overflow:hidden}
+.orbit::before,.orbit::after{content:"";position:absolute;border:1px solid rgba(21,19,17,.18);border-radius:50%;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none}
+.orbit::before{width:58%;aspect-ratio:1}.orbit::after{width:82%;aspect-ratio:1;border-style:dashed;opacity:.65}
+.orbit-core{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:132px;aspect-ratio:1;border-radius:50%;background:var(--red);color:var(--paper);display:grid;place-items:center;text-align:center;padding:18px;font-family:var(--serif);font-size:20px;line-height:1.3;z-index:2;box-shadow:0 0 0 8px rgba(239,75,76,.12)}
+.orbit-core::before{content:"";position:absolute;inset:-12px;border:1px solid rgba(239,75,76,.45);border-radius:50%;animation:orbitPulse 3.8s ease-in-out infinite}
+.orbit-core::after{content:"";position:absolute;inset:-22px;border:1px dashed rgba(21,19,17,.24);border-radius:50%;animation:orbitSpin 24s linear infinite}
+.orbit-core.pulse{animation:corePulse .55s var(--ease)}
+@keyframes corePulse{0%{transform:translate(-50%,-50%) scale(1)}45%{transform:translate(-50%,-50%) scale(1.12)}100%{transform:translate(-50%,-50%) scale(1)}}
+@keyframes orbitPulse{0%,100%{transform:scale(.94);opacity:.35}50%{transform:scale(1.05);opacity:.9}}
+@keyframes orbitSpin{to{transform:rotate(360deg)}}
+.orbit-core small{display:block;font-family:var(--sans);font-size:9px;letter-spacing:.16em;margin-top:5px;opacity:.8}
+.orbit-line{position:absolute;left:50%;top:50%;width:39%;height:1px;background:rgba(21,19,17,.28);transform-origin:left center;z-index:1}
+.orbit-line:nth-of-type(1){transform:rotate(-90deg)}.orbit-line:nth-of-type(2){transform:rotate(-30deg)}.orbit-line:nth-of-type(3){transform:rotate(30deg)}
+.orbit-line:nth-of-type(4){transform:rotate(90deg)}.orbit-line:nth-of-type(5){transform:rotate(150deg)}.orbit-line:nth-of-type(6){transform:rotate(210deg)}
+.orbit-node{position:absolute;z-index:3;width:116px;min-height:76px;padding:10px 8px;border:1.5px solid var(--ink);background:var(--cream);font:inherit;text-align:center;cursor:pointer;transition:background .3s,color .3s,transform .3s;box-shadow:4px 4px 0 rgba(21,19,17,.12)}
+.orbit-node:hover,.orbit-node.active{background:var(--ink);color:var(--paper);transform:translateY(-4px)}
+.orbit-node.active{box-shadow:0 0 0 3px var(--red),6px 6px 0 rgba(21,19,17,.16)}
+.orbit-node b{display:block;font-family:var(--display);font-size:12px;letter-spacing:.16em;color:var(--red);margin-bottom:4px}.orbit-node.active b{color:var(--paper)}
+.orbit-node span{font-family:var(--serif);font-size:15px;line-height:1.25}
+.node-1{left:50%;top:7%;transform:translateX(-50%)}.node-2{right:5%;top:27%}.node-3{right:5%;bottom:14%}.node-4{left:50%;bottom:5%;transform:translateX(-50%)}.node-5{left:5%;bottom:14%}.node-6{left:5%;top:27%}
+.orbit-node.node-1:hover,.orbit-node.node-1.active,.orbit-node.node-4:hover,.orbit-node.node-4.active{transform:translateX(-50%) translateY(-4px)}
+.map-detail{background:var(--cream);padding:34px 36px;min-height:590px;display:flex;flex-direction:column}
+.detail-kicker{font-size:10px;letter-spacing:.2em;color:var(--red)}
+.detail-title{font-family:var(--serif);font-size:clamp(25px,3vw,42px);font-weight:400;line-height:1.2;margin-top:12px}
+.detail-lead{font-family:var(--serif);font-size:17px;line-height:1.65;margin-top:22px;max-width:42ch}
+.detail-body{font-size:12.5px;line-height:2;margin-top:20px;max-width:58ch;opacity:.78}
+.detail-body strong{font-weight:600;color:var(--ink)}
+.detail-observe{margin-top:18px;padding:12px 14px;background:rgba(255,252,217,.62);border-left:2px solid var(--red);font-size:11px;line-height:1.85;opacity:.82}
+.detail-observe b{font-family:var(--serif);font-weight:400;color:var(--red);margin-right:6px}
+.detail-ask{margin-top:auto;padding-top:20px;border-top:1px dashed rgba(21,19,17,.35);font-size:11px;line-height:1.9;color:var(--red);letter-spacing:.04em}
+.detail-ask::before{display:block;margin-bottom:10px;color:var(--ink);font-family:var(--sans);font-size:11px;line-height:1.85;letter-spacing:.02em;opacity:.78}
+.detail-panel[data-panel="value"] .detail-ask::before{content:"判断场景不能从“哪里能接模型”开始，而要看任务是否同时具备高频、数字化输入、可验收结果和可承受的错误成本。客服与软件工程先规模化，是因为工单关闭、测试通过都能计量，AI 的节省可以直接映射到成本；营销与电商要继续追问是否改变转化和复购，而不是只提高内容产量；医药、金融的价值可能更大，却必须把证据、权限和责任链做成产品的一部分。我的取舍是先选结果责任清晰的窄任务，再沿工作流扩张。"}
+.detail-panel[data-panel="model"] .detail-ask::before{content:"模型边界要按“能力形态”而不是品牌榜单来拆：OpenAI、Claude、Gemini、Qwen、DeepSeek、Llama 等通用语言模型都擅长压缩、改写和代码生成，但会在事实时效、长链组合推理、拒答校准和工具调用上漂移；推理模型用更多测试时计算换取数学、代码和规划能力，却带来延迟、成本和过程不透明；MoE 通过稀疏激活降低推理成本，却可能出现专家路由不稳。多模态模型在空间关系、计数、文字读取、音视频时间一致性上仍有高发失效；扩散/视频模型能生成视觉上合理的候选，却不能自动保证物理、因果和业务可执行。产品承诺必须建立在任务级最坏边界可检测、可降级，而不是某次 Demo 的最好表现。"}
+.detail-panel[data-panel="system"] .detail-ask::before{content:"系统层至少要分清六种东西：RAG 负责从外部知识取证，Function Calling 让模型输出结构化参数，Tools 才真正执行查询、写入或外部动作，Skills 是可复用的任务规程与提示，MCP 解决工具和数据源的标准化连接，Memory 则管理跨轮次的用户偏好与任务状态。RAG 的难点不只是召回：切块会断语义，向量相似不等于任务相关，知识更新、权限、多跳和上下文膨胀会放大错误。落地时先按问题类型路由，再做混合召回、重排、查询分解、引用校验；让 Agent 只在证据不足时继续搜索，并为每个 Tool 设定权限、超时、幂等、预算和回滚。"}
+.detail-panel[data-panel="ux"] .detail-ask::before{content:"产品体验不该只讨论“控制权”，而要分四层设计：价值层回答用户为什么要用、结果如何被验收；体验层处理输入、等待、预览、解释、修改和协作；控制层决定用户能改结果、步骤、参数还是工具权限；责任层规定哪些动作自动执行、哪些必须确认、失败由谁接管。低风险、可逆任务可以隐藏复杂度，高风险、不可逆任务必须让状态、依据、影响范围和撤回路径可见。Agent 的自主性不是越高越好，而是随着可验证性和可逆性一起增长。"}
+.detail-panel[data-panel="eval"] .detail-ask::before{content:"评测要按产品层级执行，而不是拿一个模型分数代替一切：第一步定义任务契约和不可接受失败；第二步按真实流量建立 Golden Set、长尾集、对抗集和回归集，并标注难度、来源、权限和风险；第三步分别评模型输出、检索证据、Tool 参数、Agent 轨迹、最终任务结果和人工接管；第四步用规则/代码评测确定性指标，用模型评审处理开放质量，用人工评审处理责任与偏好；第五步做离线回归、影子流量、灰度和线上监控。模型评测看能力，应用评测看任务，Agent 评测还要看路径是否绕路、误调用、越权、循环和成本失控。"}
+.detail-panel[data-panel="flywheel"] .detail-ask::before{content:"反馈要先被分类，才可能形成资产：接受、修改、拒绝、重试、放弃和人工接管分别代表不同信号；再把问题归因到意图、上下文、检索、生成、Tool、交互或业务流程。高置信的重复失败进入回归集和规则，稳定的偏好差异进入评测标准，新的领域事实进入知识库，只有确认是模型能力缺口时才进入训练或模型选择。这样闭环的目标不是“数据越多越好”，而是每次使用都降低下一次的判断成本、人工成本和错误成本，最终形成工作流与责任链的迁移壁垒。"}
+.value-map-img{display:block;width:min(100%,420px);height:auto;margin:20px 0 0;border:1px solid rgba(21,19,17,.16);border-radius:4px;background:var(--paper);box-shadow:4px 4px 0 rgba(21,19,17,.10)}
+.detail-panel[data-panel="value"] .detail-ask::before,.detail-panel[data-panel="model"] .detail-ask::before,.detail-panel[data-panel="system"] .detail-ask::before,.detail-panel[data-panel="ux"] .detail-ask::before,.detail-panel[data-panel="eval"] .detail-ask::before,.detail-panel[data-panel="flywheel"] .detail-ask::before{display:none}
+.model-map-img{display:block;width:min(100%,400px);height:auto;margin:20px 0 0;border:1px solid rgba(21,19,17,.16);border-radius:4px;background:var(--paper);box-shadow:4px 4px 0 rgba(21,19,17,.10)}
+.system-map-img{display:block;width:min(100%,380px);height:auto;margin:20px 0 0;border:1px solid rgba(21,19,17,.16);border-radius:4px;background:var(--paper);box-shadow:4px 4px 0 rgba(21,19,17,.10)}
+.deep-grid{display:none!important}
+.deep-card{background:var(--paper);padding:24px 22px 22px;min-height:310px}
+.deep-card:nth-child(even){background:var(--cream)}
+.deep-card .deep-no{font-family:var(--display);font-size:12px;letter-spacing:.16em;color:var(--red)}
+.deep-card h4{font-family:var(--serif);font-size:22px;font-weight:400;line-height:1.3;margin-top:10px}
+.deep-card p{font-size:11.5px;line-height:1.9;opacity:.78;margin-top:12px}
+.deep-card p b{font-weight:400;color:var(--red);font-family:var(--serif)}
+@media(max-width:600px){.deep-card{min-height:0;padding:22px 20px}}
+.detail-panel{display:none}.detail-panel.active{display:block}
+.detail-panel.active .detail-title,.detail-panel.active .detail-lead,.detail-panel.active .detail-body,.detail-panel.active .detail-ask{animation:detailIn .5s var(--ease) both}
+@keyframes detailIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.think-foot{margin-top:26px;font-size:13px;line-height:2;opacity:.8}.think-foot b{font-weight:400;font-family:var(--serif);border-bottom:2px solid var(--red)}
+@media(max-width:900px){
+  .think-intro{grid-template-columns:1fr;gap:18px;padding:5vh 0 4vh}
+  .think-map{grid-template-columns:1fr}
+  .orbit{min-height:500px}
+  .map-detail{min-height:0;padding:28px 24px 32px}
+}
+
+/* ============ 小票 / 联系 ============ */
+#contact{background:var(--cream);position:relative;overflow:hidden}
+.ct-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:6vw;align-items:start}
+.ct-left h2{font-size:clamp(38px,7vw,110px)}
+.ct-words{margin-top:26px;max-width:42ch}
+.ct-words p{font-size:13px;line-height:2.15;opacity:.78}
+.ct-words p+p{margin-top:14px}
+.ct-words .ct-ps{font-family:var(--serif);opacity:.95;letter-spacing:.02em;padding-left:14px;border-left:2px solid var(--red)}
+.ct-links{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+.ct-links a{
+  font-size:12px;letter-spacing:.14em;border-bottom:1px solid rgba(21,19,17,.35);padding-bottom:3px;
+  transition:color .3s,border-color .3s;
+}
+.ct-links a:hover{color:var(--red);border-color:var(--red)}
+.wxbox{display:flex;align-items:center;gap:14px;padding:4px 0}
+.wxbox img{width:96px;height:96px;object-fit:contain;border:1px solid rgba(21,19,17,.25);background:#fff;padding:4px}
+.wxbox span{font-size:11px;line-height:1.9;letter-spacing:.06em;opacity:.7}
+.ct-left .scramble{font-family:var(--serif);cursor:pointer}
+.mailbtn{
+  display:inline-flex;align-items:center;gap:14px;margin-top:34px;padding:18px 30px;border:1.5px solid var(--ink);
+  border-radius:999px;background:var(--paper);font-size:13px;letter-spacing:.2em;position:relative;overflow:hidden;
+  will-change:transform;
+}
+.mailbtn .fillz{position:absolute;inset:0;background:var(--red);transform:translateY(101%);transition:transform .5s var(--ease);z-index:0}
+.mailbtn:hover .fillz{transform:translateY(0)}
+.mailbtn span{position:relative;z-index:1;transition:color .4s}
+.mailbtn:hover span{color:var(--paper)}
+.receipt{
+  background:var(--paper);border:1.5px solid var(--ink);padding:30px 26px 46px;font-size:12px;line-height:2.2;
+  box-shadow:8px 8px 0 var(--ink);transform-origin:top center;
+  clip-path:polygon(0 0,100% 0,100% 98%,95% 100%,90% 98%,85% 100%,80% 98%,75% 100%,70% 98%,65% 100%,60% 98%,55% 100%,50% 98%,45% 100%,40% 98%,35% 100%,30% 98%,25% 100%,20% 98%,15% 100%,10% 98%,5% 100%,0 98%);
+  max-height:0;overflow:hidden;transition:max-height 1.4s var(--ease);
+}
+.receipt.print{max-height:1040px}
+.receipt h4{font-family:var(--serif);font-size:20px;letter-spacing:.1em;text-align:center;margin-bottom:6px}
+.receipt .dash{border-top:1px dashed var(--ink);margin:14px 0;opacity:.5}
+.receipt .r{display:flex;justify-content:space-between;gap:12px}
+.receipt .r i{flex:1;border-bottom:1px dotted rgba(21,19,17,.3);margin:0 6px 4px}
+.receipt .total{font-family:var(--serif);font-size:16px}
+.receipt .stamp{
+  margin-top:18px;display:inline-block;border:2px solid var(--red);color:var(--red);padding:6px 14px;
+  transform:rotate(-6deg);font-size:12px;letter-spacing:.2em;
+}
+
+/* ============ 页脚 ============ */
+footer{background:var(--ink);color:var(--cream);padding:9vh 0 4vh;overflow:hidden}
+.f-top{display:flex;justify-content:space-between;align-items:flex-end;gap:4vw}
+.f-core{text-align:center;flex:none}
+.f-core img{width:min(16vw,170px);animation:float 10s ease-in-out infinite}
+.f-core span{display:block;margin-top:10px;font-size:11px;letter-spacing:.18em;opacity:.6}
+.f-big{font-family:var(--serif);font-size:clamp(48px,13vw,200px);line-height:.86;letter-spacing:-.02em}
+.f-big em{color:var(--red);font-style:italic}
+.f-row{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-top:5vh;font-size:12px;letter-spacing:.18em;opacity:.7}
+.totop{border:1px solid rgba(248,236,224,.4);border-radius:999px;padding:12px 22px}
+.totop:hover{background:var(--red);border-color:var(--red)}
+
+/* 侧边章节导航 */
+.dots{
+  position:fixed;left:26px;top:50%;transform:translateY(-50%);z-index:8100;
+  display:grid;gap:16px;
+}
+.dots a{display:flex;align-items:center;gap:10px;height:12px}
+.dots i{
+  width:9px;height:9px;border-radius:50%;border:1.5px solid var(--ink);flex:none;
+  transition:background .35s,transform .35s var(--ease),border-color .35s;
+}
+.dots a.act i{background:var(--red);border-color:var(--red);transform:scale(1.5)}
+.dots b{
+  font-family:var(--serif);font-size:12px;letter-spacing:.14em;white-space:nowrap;
+  opacity:0;transform:translateX(-8px);transition:opacity .35s,transform .35s var(--ease);
+}
+.dots a:hover b{opacity:.75;transform:translateX(0)}
+.dots.on-dark i{border-color:var(--cream)}
+.dots.on-dark a.act i{background:var(--red);border-color:var(--red)}
+.dots.on-dark b{color:var(--cream)}
+.cursor.inv{background:var(--paper)}
+.cursor.inv .clabel{color:var(--ink)}
+.cursor-ring.inv{border-color:var(--paper)}
+@media(max-width:980px){.dots{display:none}}
+
+/* 键盘提示 */
+.kbd{
+  position:fixed;left:26px;bottom:22px;z-index:8100;font-size:10px;letter-spacing:.16em;opacity:.4;
+  display:flex;gap:8px;align-items:center;
+}
+.kbd span{border:1px solid currentColor;border-radius:3px;padding:1px 5px}
+@media(max-width:980px){.kbd{display:none}}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.05ms!important}
+}
+
+/* 进度条 */
+#prog{position:fixed;top:0;left:0;height:3px;background:var(--red);z-index:9100;width:0}
+
+/* 苹果进度：完整 → 切开 → 咬掉 → 只剩核 */
+#appleProg{
+  position:fixed;right:26px;bottom:24px;z-index:9100;width:96px;text-align:center;
+  pointer-events:none;opacity:0;transition:opacity .6s var(--ease);
+}
+#appleProg.show{opacity:1}
+#appleProg .stack{position:relative;width:96px;height:96px}
+#appleProg .stack img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
+  opacity:0;transform:scale(.9);transition:opacity .55s var(--ease),transform .55s var(--ease);
+  filter:drop-shadow(0 8px 14px rgba(230,40,38,.2));
+}
+#appleProg .stack img.on{opacity:1;transform:scale(1)}
+#appleProg .stack.pop img.on{animation:bite .5s var(--ease)}
+@keyframes bite{0%{transform:scale(1.16) rotate(-5deg)}60%{transform:scale(.97) rotate(2deg)}100%{transform:scale(1)}}
+#appleProg .pct{
+  display:inline-block;margin-top:4px;font-size:10px;letter-spacing:.16em;font-family:var(--serif);
+  background:var(--paper);border:1px solid var(--ink);border-radius:999px;padding:2px 9px;
+}
+@media(max-width:860px){#appleProg{width:64px;right:14px;bottom:14px}#appleProg .stack{width:64px;height:64px}}
+
+/* 彩蛋 */
+.confetti{position:fixed;z-index:9200;pointer-events:none;width:22px;height:22px}
+.eggtip{
+  position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(140%);z-index:9150;
+  background:var(--ink);color:var(--paper);padding:10px 18px;border-radius:999px;font-size:11px;letter-spacing:.18em;
+  transition:transform .6s var(--ease);
+}
+.eggtip.show{transform:translateX(-50%) translateY(0)}
+
+@media(max-width:860px){
+  #hero{flex-direction:column;align-items:stretch;padding:13vh 0 8vh}
+  .hero-grid{order:1;width:90vw}
+  .fruit-stage{position:static;order:2;width:100%}
+  .fruit{position:relative;right:auto;top:auto;transform:none;width:74vw;margin:4vh auto 0}
+  .hero-title{font-size:clamp(38px,11vw,64px)}
+  .hero-kicker{gap:8px}
+  .chip{font-size:10px;padding:6px 11px}
+  .hero-sub,.hero-intro{max-width:none}
+  .sticker.s-qr,.sticker.s-ast,.sticker.s-tag{display:none}
+  .f-top{flex-direction:column;align-items:flex-start;gap:4vh}
+  .ct-grid{grid-template-columns:1fr}
+  .card{width:74vw}
+  .hscroll{height:260vh}
+  .hero-bottom{position:static;margin-top:6vh;width:auto;order:3}
+}
+@media(min-width:901px){
+  .scr-stage{height:72vh;min-height:560px}
+  .think{padding:6vh 0 8vh}
+  .think-intro{padding:3vh 0 3vh;gap:3vw}
+  .think-map{grid-template-columns:minmax(300px,.78fr) minmax(0,1.22fr)}
+  .orbit,.map-detail{min-height:470px}
+  .map-detail{padding:26px 30px}
+  .map-detail .detail-panel{width:100%}
+  .map-detail .detail-lead{max-width:72ch}
+  .map-detail .detail-body{max-width:78ch}
+  .detail-lead{margin-top:14px;font-size:16px}
+  .detail-body{margin-top:14px;line-height:1.8;font-size:12px}
+  .value-map-img,.model-map-img,.system-map-img{margin-top:16px}
+}
+@media(max-width:600px){
+  .value-map-img,.model-map-img,.system-map-img{width:100%;max-width:none}
+  .sect{padding:12vh 0}
+  .hstick{gap:2vh}
+  .hhead{padding:0 7vw;align-items:flex-start;gap:12px}
+  .hhead .count{font-size:11px;letter-spacing:.12em}
+  .htrack{padding:0 7vw;gap:7vw}
+  .card{width:82vw;min-height:0}
+  .card .meta{font-size:10px;letter-spacing:.08em;gap:10px}
+  .card .meta span:first-child{min-width:0}
+  .card h3{font-size:24px;line-height:1.2}
+  .card .prob,.card .ins{font-size:12px;line-height:1.8}
+  .ct-grid{gap:8vh}
+  .ct-words{max-width:none}
+  .wxbox{align-items:flex-start}
+  .wxbox span{min-width:0;overflow-wrap:anywhere}
+  .receipt{padding:24px 18px 40px;box-shadow:5px 5px 0 var(--ink)}
+  .receipt .r{align-items:flex-start;font-size:11px;gap:8px}
+  .receipt .r i{min-width:10px}
+  .receipt .r>span:last-child{text-align:right;overflow-wrap:anywhere}
+}
+</style>
+</head>
+<body class="lock">
+
+<div class="grain"></div>
+<div id="prog"></div>
+<div id="appleProg" aria-hidden="true">
+  <div class="stack" id="appleStack">
+    <img src="assets/apple-whole.png" alt="" class="on">
+    <img src="assets/apple-half.png" alt="">
+    <img src="assets/apple-bitten.png" alt="">
+    <img src="assets/apple-core.png" alt="">
+  </div>
+  <span class="pct" id="applePct">刚开始</span>
+</div>
+<div class="cursor"><span class="clabel"></span></div>
+<div class="cursor-ring"></div>
+
+<!-- 开场 -->
+<div id="preloader">
+  <div class="pl-num">00</div>
+  <div class="pl-side">欢迎光临<br>正在装载 / LOADING<br>ZHOU XUN · LORA</div>
+  <div class="pl-bar"><i></i></div>
+</div>
+
+<!-- 顶栏 -->
+<header class="topbar" id="topbar">
+  <div class="brand">
+    <svg class="ast" viewBox="0 0 100 100" aria-hidden="true"><path fill="currentColor" d="M50 2c9 0 13 14 8 30 11-12 24-19 30-13s-1 19-17 24c16 5 23 18 17 24s-19-1-30-13c5 16 1 30-8 30s-13-14-8-30c-11 12-24 19-30 13s1-19 17-24C4 38-3 25 3 19s19 1 30 13C28 16 41 2 50 2z"/></svg>
+    <span>AI Product Manager</span>
+  </div>
+  <nav class="topnav" id="topnav" aria-label="板块导航">
+    <img class="nav-apple" src="assets/apple-whole.png" alt="">
+    <a href="#spec">经历</a>
+    <a href="#works">项目</a>
+    <a href="#scratch">思考</a>
+    <a href="#contact">联系我</a>
+  </nav>
+  <button class="menu-btn" id="menuOpen" data-cursor="MENU">
+    <span>目录</span><span class="bars"><i></i><i></i></span>
+  </button>
+</header>
+
+<!-- 菜单 -->
+<nav id="menu">
+  <button class="m-close" id="menuClose" data-cursor="CLOSE">关闭 / CLOSE</button>
+  <ol>
+    <li><a href="#hero"><small>01</small> 封面 / Cover</a></li>
+    <li><a href="#spec"><small>02</small> 经历 / Experience</a></li>
+    <li><a href="#works"><small>03</small> 项目 / Projects</a></li>
+    <li><a href="#scratch"><small>04</small> 思考 / Thinking</a></li>
+    <li><a href="#contact"><small>05</small> 联系我 / Contact</a></li>
+  </ol>
+  <div class="m-foot"><span>周迅 Lora</span><span>AI 产品经理</span><span>2026 版本</span></div>
+</nav>
+<nav class="dots" id="dots" aria-label="章节导航">
+  <a href="#hero"><i></i><b>01 封面</b></a>
+  <a href="#spec"><i></i><b>02 经历</b></a>
+  <a href="#works"><i></i><b>03 项目</b></a>
+  <a href="#scratch"><i></i><b>04 思考</b></a>
+  <a href="#contact"><i></i><b>05 联系我</b></a>
+</nav>
+<div class="kbd" id="kbd"><span>1</span><span>—</span><span>5</span> 跳章节 · <span>*</span> 彩蛋</div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="fruit-stage" id="fruitStage">
+    <div class="fruit" id="fruit" data-cursor="咬一口">
+      <img class="apple on" data-st="0" src="assets/apple-whole.png" alt="">
+      <img class="apple" data-st="1" src="assets/apple-bitten.png" alt="">
+      <img class="apple" data-st="2" src="assets/apple-core.png" alt="">
+      <img class="sparkle s1" src="assets/sparkles.png" alt="">
+      <img class="sparkle s2" src="assets/sparkles-2.png" alt="">
+      <div class="stemwrap"><span class="stem"></span><span class="leaf"></span></div>
+      <div class="alabels">
+        <span class="alabel">欢迎光临 ☺</span>
+        <span class="alabel">限量版人才</span>
+        <span class="alabel">现货一枚</span>
+        <span class="alabel">保持热爱</span>
+      </div>
+      <div class="bite-toast" id="biteToast">咬了一口</div>
+    </div>
+  </div>
+
+  <div class="hero-grid">
+    <div class="hero-kicker">
+      <span class="chip">欢迎光临</span>
+      <span class="chip red">保持好奇 · KEEP CURIOUS</span>
+      <span class="chip">电量满格</span>
+    </div>
+    <h1 class="hero-title h-huge">
+      <span class="reveal"><span>周迅 <em>Lora</em></span></span>
+      <span class="reveal"><span>AI 产品经理</span></span>
+    </h1>
+    <p class="hero-strap fade">TURNING MODEL CAPABILITY INTO PRODUCTS PEOPLE ACTUALLY TRUST</p>
+    <div class="hero-intro fade">
+      <p>深度内容出身的 AI 产品经理。<a class="jb" href="#exp-01">懂技术</a>，能拆 case、能定根因，也能跟算法掰策略；<a class="jb" href="#exp-05">懂用户</a>，专业产品 sense、敏锐用户直觉（顺便研究了人怎么和 AI 谈恋爱，写成 3 篇国际顶会论文）；<a class="jb" href="#exp-03">懂边界</a>，模型不是全能王；<a class="jb" href="#exp-02">懂业务</a>，知道业务场景下 AI 到底能干嘛。</p>
+      <p>字节做模型运营、百度做搜索、AI 初创从 0 搭产品，策略、功能、评测、归因，能力链路打包带走。各大前沿 AI 平台深度氪金用户，用光速追前沿、更新技术认知。<span class="pickme">（pick me！）</span></p>
+    </div>
+  </div>
+
+  <div class="hero-bottom">
+    <div class="scrollhint"><i></i><span>向下滚动 / SCROLL</span></div>
+    <a class="resume-link" href="assets/resume-zhouxun-lora.pdf" target="_blank" rel="noopener" data-cursor="看简历">简历 PDF ↗</a>
+  </div>
+
+  <!-- 可拖拽贴纸 -->
+  <div class="sticker s-tag" style="left:52%;top:14%" data-cursor="拖我"><div class="face">拖我看看</div></div>
+  <div class="sticker s-qr" style="left:47%;top:78%" data-cursor="扫我"><img class="qr" src="assets/qr-vcard.svg" alt="扫码存名片"><a class="qrtip" href="assets/resume-zhouxun-lora.pdf" target="_blank" rel="noopener">扫码存名片 · 点我看简历 ↗</a></div>
+  <div class="sticker s-ast" style="left:38%;top:73%" data-cursor="转"><svg viewBox="0 0 100 100"><path fill="#151311" d="M50 2c9 0 13 14 8 30 11-12 24-19 30-13s-1 19-17 24c16 5 23 18 17 24s-19-1-30-13c5 16 1 30-8 30s-13-14-8-30c-11 12-24 19-30 13s1-19 17-24C4 38-3 25 3 19s19 1 30 13C28 16 41 2 50 2z"/></svg></div>
+</section>
+
+<!-- 跑马灯 -->
+<div class="marquee" id="mq1">
+  <div class="track">
+    <span>模型评测与归因 <svg width="18" height="18" viewBox="0 0 100 100"><path fill="currentColor" d="M50 2c9 0 13 14 8 30 11-12 24-19 30-13s-1 19-17 24c16 5 23 18 17 24s-19-1-30-13c5 16 1 30-8 30s-13-14-8-30c-11 12-24 19-30 13s1-19 17-24C4 38-3 25 3 19s19 1 30 13C28 16 41 2 50 2z"/></svg> 搜索与 RAG ✳ 多模态 Agent ✳ AI Coding ✳ 人机关系研究 ✳</span>
+    <span>模型评测与归因 ✳ 搜索与 RAG ✳ 多模态 Agent ✳ AI Coding ✳ 人机关系研究 ✳</span>
+  </div>
+</div>
+<!-- 经历 -->
+<section id="spec" class="sect">
+  <div class="wrap">
+    <div class="spec-head">
+      <div>
+        <div class="eyebrow fade">02 / 经历</div>
+        <h2 class="h-huge" style="margin-top:16px"><span class="reveal"><span>学而<em>实习</em>之</span></span></h2>
+        <p class="spec-sub fade">LEARNING BY SHIPPING · 四段 AI 实习，一条主线</p>
+        <div class="spec-stats fade">
+          <div><b>4</b><span>段 AI 实习</span></div>
+          <div><b>5</b><span>个能力面</span></div>
+          <div><b>+37.3%</b><span>最大单点提升</span></div>
+          <div><b>10w+</b><span>用户行为分析</span></div>
+        </div>
+      </div>
+      <div class="sumcard fade">
+        <div class="sum-t">一句话总结 / IN ONE LINE</div>
+        <p class="sum-lead">过去一年我一直在做同一件事：<b>把不确定的模型能力，变成能验证、能上线、能持续迭代的产品。</b></p>
+      </div>
+    </div>
+
+    <div class="spec-list" id="specList">
+      <div class="rail" id="specRail"><img src="assets/apple-whole.png" alt=""></div>
+      <div class="spec-row fade" id="exp-01" data-cursor="展开">
+        <div class="bg"></div>
+        <div class="line"><span class="no">01</span><span class="k">模型评测体系 <i>Evaluation</i></span><span class="v"><b>+7.9%</b><i>未知失效模式命中</i><em>评测集精简 21.3%</em></span></div>
+        <div class="more">
+          <p>离线平均分稳定，真实用户却在复杂动作和长指令下频繁失败——静态评测集一直在反复采样已知弱点。围绕 Prompt 遵循、画面质量、运动一致性定义评测标准，主导设计回归 / 轮转 / 边界 / 盲区四池并按已知失效模式做对抗扩样，把评测目标从「验证已知能力」改成「持续发现能力边界」；再把可规模化的部分交给自动化评测 Agent，只把高分歧 Badcase 和策略判断留给人。Badcase 分层归因：规则与顺序问题改 Prompt、跨 Prompt 稳定复现进 SFT、质量偏好权衡进 RLHF。</p>
+          <div class="tags"><span>分层评测集</span><span>对抗样本</span><span>失效模式归因</span><span>Prompt / SFT / RLHF</span><span>发布门禁</span></div>
+          <span class="org">字节跳动 · Seedance 2.0 pro</span>
+        </div>
+      </div>
+      <div class="spec-row fade" id="exp-02" data-cursor="展开">
+        <div class="bg"></div>
+        <div class="line"><span class="no">02</span><span class="k">搜索策略与 RAG <i>Search &amp; RAG</i></span><span class="v"><b>+16.8%</b><i>影视垂类 PV</i><em>前四理想可播率 +3.2pp</em></span></div>
+        <div class="more">
+          <p>口语化、模糊记忆型和超长 query 经常无结果或错位；长尾冷门问题里用户想要的是剧情、演职人员关系和观看渠道，通用模型容易误答、还接不上播放。按 query 意图类型评估语义召回的增量覆盖与算力成本，明确它的适用边界而不是全量替换关键词召回，设计双路召回 + 路由分发 + 结果融合；再拆六类高频意图，串起「意图识别 → 双路召回 → 候选资源定位 → 结构化 Prompt 组装 → 答案校验 → 资源卡承接」的 RAG 链路，确认不了唯一结果就走明确降级话术。</p>
+          <div class="tags"><span>意图识别</span><span>关键词 + 语义双路召回</span><span>RAG 链路</span><span>可溯源校验</span><span>A/B 实验</span></div>
+          <span class="org">百度 · 搜索影视垂类</span>
+        </div>
+      </div>
+      <div class="spec-row fade" id="exp-03" data-cursor="展开">
+        <div class="bg"></div>
+        <div class="line"><span class="no">03</span><span class="k">Agent Harness 与可控性 <i>Harness</i></span><span class="v"><b>-45.3%</b><i>用户重复生成率</i><em>一致性 Badcase -35.6%</em></span></div>
+        <div class="more">
+          <p>底层生成模型本身无状态，多分镜之间角色形象、场景风格和色调容易割裂，用户只能反复重生成；想改一个镜头或一个参数，往往整段视频要重做。先定义角色、场景、风格和动作连续性的一致性标准，在 Harness 层设计参考锚点提取、状态存储、跨镜头 Context 传递、生成后校验与失败降级，把单次生成能力变成可连续创作的体验；再把「可控性」拆成脚本、分镜、生成、编辑四个介入点，用轨迹拖拽、预设模板和参数化输入承载，默认极简、进阶收进二级面板。</p>
+          <div class="tags"><span>参考锚点</span><span>状态与 Context 传递</span><span>生成后校验</span><span>失败降级</span><span>控制粒度分层</span></div>
+          <span class="org">Movieflow · AI 视频 Agent</span>
+        </div>
+      </div>
+      <div class="spec-row fade" id="exp-04" data-cursor="展开">
+        <div class="bg"></div>
+        <div class="line"><span class="no">04</span><span class="k">体验落地与生态治理 <i>Delivery</i></span><span class="v"><b>+37.3%</b><i>播放成功率净增</i><em>换 query 比例 -2.95%</em></span></div>
+        <div class="more">
+          <p>能搜到但打不开、片源临期下架、预约状态变化、不同终端播放体验不一致——搜索结果的价值最终卡在「能不能播」这一步。推动影视阿拉丁卡结构化字段标准化，打通上游片源数据自动更新，搭建覆盖画质、完整度和可播性的资源分级体系，联动内容运营补齐优质资源缺口；主导 AirPlay 投屏、播放器统一、页面 NA 化、流畅播等 9 项跨终端需求从立项到上线。另外用 AI Coding 独立做了影视人工干预中台，把干预时效性提升 1.2 个自然日。</p>
+          <div class="tags"><span>字段标准化</span><span>资源分级</span><span>上游数据自动更新</span><span>9 项跨端需求</span><span>AI Coding 自建工具</span></div>
+          <span class="org">百度 · 搜索影视垂类</span>
+        </div>
+      </div>
+      <div class="spec-row fade" id="exp-05" data-cursor="展开">
+        <div class="bg"></div>
+        <div class="line"><span class="no">05</span><span class="k">增长与商业化 <i>Growth</i></span><span class="v"><b>+13.13%</b><i>GMV 环比（约 8 万美元）</i><em>10w+ 用户行为分析</em></span></div>
+        <div class="more">
+          <p>新用户完成首次生成后，因为结果不稳定、失败后又没有修复路径而停在原地；会员权益也和真实需求错位。分析 10w+ 用户行为数据，交叉观察生成结果、功能使用路径、重试行为与 7 日留存，定位「首次有效创作 → 持续使用」之间的关键阻断点并输出功能优化 PRD；在此基础上做用户分层与定向调研，重构会员权益组合与付费梯度，配合免费额度、邀请返积分、达人合作和大促组合推进增长。</p>
+          <div class="tags"><span>10w+ 行为数据</span><span>路径 × 留存交叉分析</span><span>首次有效结果</span><span>权益与付费梯度</span><span>增长实验</span></div>
+          <span class="org">Movieflow · AI 视频 Agent</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl fade">
+      <div class="tl-head"><span>时间轴 / TIMELINE</span><span>四段 AI 实习 · 一条主线连着做</span></div>
+      <div class="tl-line">
+        <div class="tl-item">
+          <span class="dot"></span>
+          <b>2025.06 — 2025.10</b>
+          <span class="org">坤启 ConvergeAI</span>
+          <span class="role">AI 产品经理实习 · AI-native 工作平台</span>
+        </div>
+        <div class="tl-item">
+          <span class="dot"></span>
+          <b>2025.11 — 2026.01</b>
+          <span class="org">Movieflow</span>
+          <span class="role">AI 产品经理实习 · AI 视频 Agent</span>
+        </div>
+        <div class="tl-item">
+          <span class="dot"></span>
+          <b>2026.02 — 2026.04</b>
+          <span class="org">字节跳动</span>
+          <span class="role">AI 产品经理实习 · Seedance 2.0 pro</span>
+        </div>
+        <div class="tl-item now">
+          <span class="dot"><img src="assets/apple-whole.png" alt=""></span>
+          <b>2026.05 — 至今</b>
+          <span class="org">百度</span>
+          <span class="role">AI 产品经理实习 · 搜索影视垂类</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="edu fade">
+      <div class="edu-head">
+        <span>学业 / EDUCATION</span>
+        <span>中国传媒大学 · 211 双一流</span>
+      </div>
+      <div class="edu-grid">
+        <div class="edu-card">
+          <div class="edu-top">
+            <div>
+              <div class="deg">国际新闻学 · 硕士</div>
+              <div class="degt">2024.09 — 2027.07 · 中宣部直属</div>
+            </div>
+            <div class="gpa"><b>3.98</b><span>/ 4.0<em>专业第 1</em></span></div>
+          </div>
+          <ul>
+            <li>国家奖学金</li>
+            <li>C 刊论文 1 篇</li>
+            <li>国际顶会论文 3 篇 · 人机恋 / AI 陪伴</li>
+            <li>英语专四优秀 · 双语工作能力</li>
+          </ul>
+        </div>
+        <div class="edu-card">
+          <div class="edu-top">
+            <div>
+              <div class="deg">网络与新媒体 · 学士</div>
+              <div class="degt">2020.09 — 2024.07</div>
+            </div>
+            <div class="gpa"><b>3.88</b><span>/ 4.0<em>专业第 1</em></span></div>
+          </div>
+          <ul>
+            <li>国家奖学金</li>
+            <li>9 项创新创业奖项 · 省市级银奖</li>
+            <li>学生会主席</li>
+            <li>北京国际电影节 / 海南岛国际电影节 · 导演组与制片</li>
+          </ul>
+        </div>
+      </div>
+      <div class="edu-foot">
+        <span class="ef-t">这些经历教会我的</span>
+        <span>把复杂议题拆清楚</span>
+        <span>在不确定里做判断</span>
+        <span>组织人和流程</span>
+        <span>把研究变成可用的结论</span>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- 横向陈列 -->
+<section id="works">
+  <div class="hscroll" id="hscroll">
+    <div class="hstick">
+      <div class="hhead">
+        <div>
+          <h2>03 / 项目作品</h2>
+          <p class="hnote">在市场里发现洞察，用作品验证判断。</p>
+        </div>
+        <div class="count"><span id="hIdx">01</span> — 07 · 可横向拖动</div>
+      </div>
+      <div class="htrack" id="htrack">
+        <article class="card" data-cursor="查看">
+          <div class="thumb"><img src="assets/projects/shroomie.jpg" alt=""><div class="tape">AI 新闻产品</div></div>
+          <div class="meta"><span>联合创作者 · 已上 App Store</span><span>2026</span></div>
+          <h3>Shroomie · Bite-sized News</h3>
+          <p class="prob">新闻 App 打开率高、读完率低，用户记不住，也不会继续追问。</p>
+          <p class="ins"><b>洞察</b>：AI 摘要缩短的是字数，真正稀缺的是"继续追问"的路径。所以做的是来源追溯和媒体观点对比，而不是更短的摘要——把一次性消费变成可持续的阅读关系。</p>
+          <div class="ptags"><span>来源可追问</span><span>观点对比</span><span>阅读习惯养成</span></div>
+          <div class="barfill"><i></i></div>
+        </article>
+        <article class="card" data-cursor="查看">
+          <div class="thumb"><img src="assets/projects/daily-me.png" alt=""><div class="tape">生成式内容工具</div></div>
+          <div class="meta"><span>产品设计 / AI Coding</span><span>2026</span></div>
+          <h3>THE DAILY ME · 个人日报</h3>
+          <p class="prob">写日记门槛太高，AI 总结又没有仪式感，记录很难持续。</p>
+          <p class="ins"><b>洞察</b>：仪式感本身是留存设计的一部分。同样的内容做成"报纸头版"，用户就愿意每天生成、并且主动分享——分享动机是内容产品最便宜的增长。</p>
+          <div class="ptags"><span>17 种媒体口吻</span><span>报纸版面渲染</span><span>一键出图分享</span></div>
+          <div class="barfill"><i></i></div>
+        </article>
+        <article class="card" data-cursor="查看">
+          <div class="thumb"><img src="assets/projects/xinghui-tarot.png" alt=""><div class="tape">手势交互实验</div></div>
+          <div class="meta"><span>产品设计 / 交互实现</span><span>2026</span></div>
+          <h3>星回 · 手势塔罗</h3>
+          <p class="prob">线上塔罗只是"点一下出结果"，缺少参与感和完成感。</p>
+          <p class="ins"><b>洞察</b>：AI 体验的差异化经常不在模型层，而在输入层。把点击换成张掌、握拳、松手，仪式就成立了——交互形态本身可以是壁垒。</p>
+          <div class="ptags"><span>摄像头手势抽牌</span><span>仪式化状态机</span><span>三牌合读</span></div>
+          <div class="barfill"><i></i></div>
+        </article>
+        <article class="card" data-cursor="查看">
+          <div class="thumb"><img src="assets/projects/bookmark-to-offer.png" alt=""><div class="tape">学习与求职工作台</div></div>
+          <div class="meta"><span>产品设计 / AI Coding</span><span>2026</span></div>
+          <h3>不吃灰 · Bookmark to Offer</h3>
+          <p class="prob">收藏了很多，真正用起来的很少，输入和行动之间有断层。</p>
+          <p class="ins"><b>洞察</b>：知识管理的真问题不是存不下，而是取不出。所以做的是"收藏 → 知识档案 → 岗位匹配 → 投递进度"这一条链，而不是又一个收藏夹。</p>
+          <div class="ptags"><span>公开账号识别</span><span>知识→岗位匹配</span><span>投递进度追踪</span></div>
+          <div class="barfill"><i></i></div>
+        </article>
+        <article class="card" data-cursor="查看">
+          <div class="thumb"><img src="assets/projects/resume-studio.png" alt=""><div class="tape">效率工具</div></div>
+          <div class="meta"><span>产品设计 / 工具开发</span><span>2026</span></div>
+          <h3>简策 · Resume Studio</h3>
+          <p class="prob">有经历但不会表达，多投一个岗位就要重排一次版。</p>
+          <p class="ins"><b>洞察</b>：简历的痛点不是排版，是"经历 → 机会"的翻译。所以核心是结构化、JD 匹配和规则检查，AI 只负责出草稿，判断权留给人。</p>
+          <div class="ptags"><span>经历结构化</span><span>JD 匹配改写</span><span>规则自检</span></div>
+          <div class="barfill"><i></i></div>
+        </article>
+        <article class="card" data-cursor="查看">
+          <div class="thumb"><img src="assets/projects/human-ai-research.jpg" alt=""><div class="tape">学术研究 · 3 篇国际顶会</div></div>
+          <div class="meta"><span>论文作者 / 用户研究</span><span>2025 — 2026</span></div>
+          <h3>人机关系与情感模型研究</h3>
+          <p class="prob">AI 陪伴产品的留存常被解释成"情绪价值"，但这解释不了用户为什么会离开。</p>
+          <p class="ins"><b>洞察</b>：基于 15 位长期用户的深访与扎根理论编码，提出认知悖论协商模型——留存来自关系连续性、人格一致性，以及情感断裂后的修复能力。这也是我做 AI 产品判断的底层依据。</p>
+          <div class="ptags"><span>15 位长期用户深访</span><span>扎根理论编码</span><span>认知悖论协商模型</span></div>
+          <div class="barfill"><i></i></div>
+        </article>
+        <article class="card" data-cursor="查看">
+          <div class="thumb"><img src="assets/projects/zhizhu.png" alt=""><div class="tape">内容平台 · 40w+ 粉丝</div></div>
+          <div class="meta"><span>大主编 / 内容策略</span><span>2022 — 2025</span></div>
+          <h3>知著网</h3>
+          <p class="prob">热点很多，值得写的少；写了也不一定有辨识度。</p>
+          <p class="ins"><b>洞察</b>：选题要同时满足热度、情绪共鸣、议题延展性和证据空间，缺一个就不写。这套标准让产出稳定，而不是靠灵感——热点评审 26 篇、带稿 76 篇，平均阅读 2w+。</p>
+          <div class="ptags"><span>选题四条件框架</span><span>热点评审 26 篇</span><span>平均阅读 2w+</span></div>
+          <div class="barfill"><i></i></div>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="marquee alt" id="mq2">
+  <div class="track">
+    <span>KEEP EXPLORING ✳ 保持好奇 ✳ 保持热爱 ✳ BE THE EXPLORER ✳ 先定义失败 ✳</span>
+    <span>KEEP EXPLORING ✳ 保持好奇 ✳ 保持热爱 ✳ BE THE EXPLORER ✳ 先定义失败 ✳</span>
+  </div>
+</div>
+<!-- 思考 -->
+<section id="scratch">
+  <div class="scr-stage" id="scrStage">
+    <div class="scr-layer scr-front">
+      <div>
+        <div class="eyebrow" style="justify-content:center">04 / 思考</div>
+        <h2 style="margin-top:20px">AI 产品的护城河，不仅仅在模型有多强</h2>
+        <p>把鼠标移过来，切开看后半句</p>
+      </div>
+      <img class="scr-apple" src="assets/apple-whole.png" alt="">
+    </div>
+    <div class="scr-layer scr-back" id="scrBack">
+      <div>
+        <div class="eyebrow" style="justify-content:center;color:var(--paper)">后半句 / THE REST</div>
+        <h2 style="margin-top:20px">更在于模型能力如何穿过技术系统、产品机制、用户行为和商业策略，最后变成可持续兑现的价值</h2>
+      </div>
+      <img class="scr-apple" src="assets/apple-half.png" alt="">
+    </div>
+    <div class="scr-tip">移动鼠标 / 触摸滑动</div>
+  </div>
+
+  <div class="wrap think">
+    <div class="think-head"><span>AI PRODUCT COGNITION / 认知地图</span><span>从问题到复利 · 点击圆盘探索</span></div>
+    <div class="think-intro"><h3>把概率性的能力，<br><em style="color:var(--red);font-style:normal">变成确定性的结果。</em></h3><p>AI 产品不是把模型接入一个界面，而是把用户任务、模型能力、数据上下文、系统编排、交互控制、评测反馈和商业结果组织成一条能持续自我修正的链路。圆盘里的六层，是我做产品时反复校验的同一件事：价值从哪里来，风险由谁承担，能力如何复利。</p></div>
+    <div class="think-map">
+      <div class="orbit" aria-label="AI 产品认知六层圆盘"><div class="orbit-core">AI<br>PRODUCT<small>从能力到结果</small></div><i class="orbit-line"></i><i class="orbit-line"></i><i class="orbit-line"></i><i class="orbit-line"></i><i class="orbit-line"></i><i class="orbit-line"></i><button class="orbit-node node-1 active" data-detail="value"><b>01 / VALUE</b><span>问题与市场</span></button><button class="orbit-node node-2" data-detail="model"><b>02 / MODEL</b><span>模型与边界</span></button><button class="orbit-node node-3" data-detail="system"><b>03 / SYSTEM</b><span>数据与编排</span></button><button class="orbit-node node-4" data-detail="ux"><b>04 / UX</b><span>交互与控制</span></button><button class="orbit-node node-5" data-detail="eval"><b>05 / EVAL</b><span>评测与责任</span></button><button class="orbit-node node-6" data-detail="flywheel"><b>06 / FLYWHEEL</b><span>反馈与复利</span></button></div>
+      <div class="map-detail"><div class="detail-panel active" data-panel="value"><div class="detail-kicker">01 / VALUE · 问题与市场</div><h3 class="detail-title">先判断什么值得被 AI 解决</h3><p class="detail-lead">不是因为模型能生成，所以产品就应该生成。</p><p class="detail-body">先拆用户真正要完成的任务：频率够不够高、结果能不能验证、错误代价由谁承担、用户愿不愿意为结果付费。再判断 AI 是减少步骤、提高质量，还是彻底改变原有工作流。模型能力越便宜，场景、分发和信任越重要。</p><div class="detail-ask">我会问：为什么现在做？为什么必须用 AI？为什么是这个产品形态？</div></div><div class="detail-panel" data-panel="model"><div class="detail-kicker">02 / MODEL · 模型与边界</div><h3 class="detail-title">模型能力是一组概率分布</h3><p class="detail-lead">不看一个漂亮的平均分，要看它在哪些条件下失效。</p><p class="detail-body">能力会随任务、输入、上下文和版本漂移。要同时看上限、稳定性、长尾、多模态、工具调用、延迟和成本。模型不知道并不可怕，可怕的是产品不知道它什么时候不知道。把不可接受的失败写清楚，才能决定哪里需要检索、约束、降级或人工确认。</p><div class="detail-ask">我会问：这是模型问题、数据问题、上下文问题，还是系统问题？</div></div><div class="detail-panel" data-panel="system"><div class="detail-kicker">03 / SYSTEM · 数据与编排</div><h3 class="detail-title">模型只是系统里的一个组件</h3><p class="detail-lead">Context、Retrieval、Tools、Memory、Workflow 共同决定产品表现。</p><p class="detail-body">RAG 不是接入一个向量库，Agent 也不是套一个框架。要设计查询理解、多路召回、证据组织、工具权限、状态传递、失败恢复和停止条件。任务明确时优先用 Workflow；步骤开放且能获得环境反馈时，才增加 Agent 的自主性。每多一层复杂度，都必须换来可测量的结果提升。</p><div class="detail-ask">我会问：增加的复杂度，究竟换来了什么确定性的收益？</div></div><div class="detail-panel" data-panel="ux"><div class="detail-kicker">04 / UX · 交互与控制</div><h3 class="detail-title">产品设计的核心，是分配控制权</h3><p class="detail-lead">用户购买的不是“用了 AI”，而是这次能不能拿到结果。</p><p class="detail-body">好的 AI 体验让用户知道系统做了什么、依据什么、哪里可能错，以及如何修改、撤回和继续。控制权可以落在结果、任务、步骤和参数四个层级：普通用户得到极简路径，专业用户逐级展开。越高风险、越不可逆的动作，越要保留人工确认和清晰的责任边界。</p><div class="detail-ask">我会问：这一步应该自动完成、建议完成，还是必须由人确认？</div></div><div class="detail-panel" data-panel="eval"><div class="detail-kicker">05 / EVAL · 评测与责任</div><h3 class="detail-title">评测不是上线前考试，而是产品基础设施</h3><p class="detail-lead">没有失败账本，就没有真正的迭代。</p><p class="detail-body">从商业结果、任务完成率、用户满意度，一直拆到事实性、相关性、一致性、安全性、成本和延迟。每个 Badcase 都要被定位：发生在输入、检索、模型、工具还是交互？能否被用户发现、系统拦截、人工接管？高风险场景还必须有审计、权限和降级路径。</p><div class="detail-ask">我会问：失败是否可检测、可解释、可恢复、可追责？</div></div><div class="detail-panel" data-panel="flywheel"><div class="detail-kicker">06 / FLYWHEEL · 反馈与复利</div><h3 class="detail-title">真正的壁垒，是把反馈变成资产</h3><p class="detail-lead">只有把每一次使用沉淀为下一次改进，产品价值才会持续增长。</p><p class="detail-body">只有当真实用户的失败样本、行为路径、领域规则和人工修正，持续进入下一轮评测、Prompt、训练数据、工作流和发布门禁，产品才会形成复利。模型能力会被复制，功能会被追平，但一条被反复验证的工作流和反馈闭环，会越来越难复制。</p><div class="detail-ask">我会问：这次上线，会为下一次判断留下什么新的能力？</div></div></div>
+    </div>
+    <div class="deep-grid" hidden>
+      <article class="deep-card"><div class="deep-no">01 / 场景筛选</div><h4>不是所有问题都值得 AI 化</h4><p><b>高价值场景：</b>客服与销售把非结构化对话变成可执行动作；营销把洞察、素材和投放实验串成闭环；电商把搜索、导购和售后从“找答案”推进到“完成购买”；医药把文献、病历和研发流程中的检索与整理交给 AI，但把诊断与处方留在责任链内。</p><p><b>筛选标准：</b>任务频繁、输入足够、结果可验证、错误可拦截、价值能量化。低价值通常是低频的“生成一段内容”；高价值是能缩短决策链、减少交接、直接改变工作流的场景。</p><p><b>观察：</b>营销和软件工程拥有最大的经济潜力，但医疗、金融等高风险领域更依赖证据、权限与人工复核。先找“结果责任明确”的窄入口，再扩展到相邻任务。</p></article>
+      <article class="deep-card"><div class="deep-no">02 / 模型地图</div><h4>先识别模型边界，再决定产品承诺</h4><p><b>大语言模型：</b>擅长语言压缩、归纳、改写和开放式推理；高发问题是幻觉、长链推理漂移、事实时效性和工具调用失误。它输出的是概率，不是事实。</p><p><b>多模态模型：</b>能把文字、图像、音频和视频放进同一任务，但在细粒度空间关系、时间一致性、文字读取、计数和跨模态引用上仍容易错。视频模型还受角色、镜头和动作连续性约束。</p><p><b>世界模型 / 生成模型：</b>适合模拟状态变化、生成方案和视觉世界，但“看起来合理”不等于物理真实、因果正确或可执行。产品应把模型作为候选生成器，用规则、仿真、工具和人来完成验证。</p></article>
+      <article class="deep-card"><div class="deep-no">03 / 上下文工程</div><h4>RAG 的难点从召回，转向证据与状态</h4><p><b>基础 RAG 卡点：</b>切块破坏语义，向量相似不等于任务相关；召回内容过多会污染上下文；知识更新、权限隔离、引用对应和多跳问题难以稳定处理。</p><p><b>前沿趋势：</b>从固定 Top-K 走向查询分解、重写、多路检索、重排、Contextual Retrieval、GraphRAG 与 Agentic RAG。Agent 先判断缺什么证据，再选择搜索、数据库、API 或继续追问，而不是每次都把整库塞进 Prompt。</p><p><b>可落地策略：</b>建立“问题类型 → 检索路径”的路由；分离用户偏好、任务状态与长期知识三种记忆；给证据打新鲜度、权限和可信度标签；检索不到唯一答案时明确降级，而不是强行生成。</p></article>
+      <article class="deep-card"><div class="deep-no">04 / 编排与 Agent</div><h4>复杂度必须换来可验证的收益</h4><p><b>组件趋势：</b>Tool Calling、MCP、Workflow 编排、状态机和可观测 Trace 正在成为 Agent 的基础设施。真正的系统不是“一个会聊天的模型”，而是一组有边界、有权限、有输入输出契约的工具。</p><p><b>选择原则：</b>步骤固定、错误代价高，用 Workflow；步骤开放、目标清晰且每一步都能获得环境反馈，才使用 Agent。多 Agent 不是默认升级，只有在任务能自然拆分、并行结果可合并时才值得引入。</p><p><b>高发问题：</b>循环失控、工具误用、上下文膨胀、状态丢失、错误累积和权限越界。解决方式是最大步数、预算、沙盒、幂等操作、人工检查点和可撤回动作。</p></article>
+      <article class="deep-card"><div class="deep-no">05 / 体验与评测</div><h4>让用户知道系统何时可信、何时需要接管</h4><p><b>交互策略：</b>把控制权分成结果、任务、步骤和参数四层；默认给最短路径，必要时展开过程。展示来源、置信线索、生成状态和可编辑中间产物，让用户能纠错而不是只能重试。</p><p><b>评测策略：</b>从业务结果向下拆到任务成功、事实性、相关性、一致性、安全性、延迟和成本；用真实日志、边界样本和对抗样本持续回归，不用单一总分替代判断。</p><p><b>责任边界：</b>可逆、低风险的动作可以自动化；不可逆、高风险、无法验证的动作必须确认、审计并提供人工接管。信任不是文案，是系统行为。</p></article>
+      <article class="deep-card"><div class="deep-no">06 / 反馈与商业</div><h4>把使用过程变成下一轮产品能力</h4><p><b>反馈闭环：</b>记录用户修改、接受、拒绝、重试、放弃和人工接管，而不只是点赞。把它们归因为意图识别、检索、生成、工具、交互或业务流程问题，再进入评测集、规则、Prompt、训练数据和发布门禁。</p><p><b>商业判断：</b>按“完成了什么结果”而非“调用了多少 Token”定价；用单位任务成本、成功率、人工节省和复购衡量价值。AI 的长期壁垒来自高频工作流、领域数据、分发入口和可信责任链。</p><p><b>最终判断：</b>一次上线只有在留下新的数据、规则、评测和流程资产时，才不是一次性功能，而是下一轮增长的起点。</p></article>
+    </div>
+  </div>
+</section>
+
+<!-- 联系 -->
+<section id="contact" class="sect">
+  <div class="wrap ct-grid">
+    <div class="ct-left">
+      <div class="eyebrow fade">05 / 联系我</div>
+      <h2 class="h-huge" style="margin-top:18px">
+        <span class="reveal"><span>聊聊吧</span></span>
+        <span class="reveal"><span class="scramble" data-text="LET'S TALK">LET'S TALK</span></span>
+      </h2>
+      <div class="ct-words fade">
+        <p>从前慢，车马邮件都慢。</p>
+        <p>从前做产品最煎熬的就是“等”，等UI，等排期，等开发，等一个想法几个月才能看到影子。</p>
+        <p>做AI最打动我的，是这种等待被无限缩短了。周末有点想法，跟模型聊聊天，顺手调调Prompt，一个能用的DEMO立马就蹦出来了，转身就能发给朋友试玩。这种“所想即所得”的创造感太让人上头了，随时都能把脑子里那些奇奇怪怪的想法拽进现实里。</p>
+        <p>剩下的时间就拿来死磕调节、优化、迭代、测试、反馈，再迭代……这种亲手打磨细节的踏实感实在令人满足。</p>
+        <p>感谢AI，我的魔法药水，让我在某个地方，能一直保持800%的热情，做个真诚的产品经理。</p>
+      </div>
+      <a href="mailto:15958452613@163.com" class="mailbtn magnet" data-cursor="写信"><span class="fillz"></span><span>15958452613@163.com</span><span>↗</span></a>
+      <div class="ct-links fade">
+        <a href="https://github.com/zxhaha18-alt" target="_blank" rel="noopener" data-cursor="GitHub">GitHub · zxhaha18-alt ↗</a>
+        <a href="assets/resume-zhouxun-lora.pdf" target="_blank" rel="noopener" data-cursor="看简历">简历 PDF ↗</a>
+      </div>
+    </div>
+
+    <div class="receipt" id="receipt">
+      <h4>周迅 Lora · 名片</h4>
+      <div style="text-align:center;font-size:11px;letter-spacing:.2em;opacity:.6">AI PRODUCT MANAGER · 2026</div>
+      <div class="dash"></div>
+      <div class="wxbox">
+        <img src="assets/wechat-qr.jpg" alt="微信二维码">
+        <span>微信扫码来玩 · 期待和你碰撞点火花！</span>
+      </div>
+      <div class="dash"></div>
+      <div class="r"><span>邮箱</span><i></i><span>15958452613@163.com</span></div>
+      <div class="r"><span>GitHub</span><i></i><span>zxhaha18-alt</span></div>
+      <div class="r"><span>坐标</span><i></i><span>北京 · 可提前到岗</span></div>
+      <div class="r"><span>在读</span><i></i><span>中国传媒大学 · 硕士</span></div>
+      <div class="dash"></div>
+      <div class="r total"><span>现在在做</span><i></i><span>百度 · 搜索影视垂类</span></div>
+      <div class="dash"></div>
+      <div style="font-size:11px;letter-spacing:.14em;opacity:.7;line-height:2">名片的页面里的苹果可以咬，贴纸可以拖，按 <b>*</b> 有彩蛋——你一定已经发现了！</div>
+      <div style="text-align:center"><span class="stamp">保持联系 · KEEP IN TOUCH</span></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="f-top">
+      <div class="f-big"><span class="reveal"><span>KEEP <em>*</em></span></span><span class="reveal"><span>EXPLORING</span></span></div>
+      <div class="f-core">
+        <img src="assets/apple-core.png" alt="">
+        <span>页面有点长，谢谢你看到这里</span>
+      </div>
+    </div>
+    <div class="f-row">
+      <span>© 2026 周迅 Lora</span>
+      <span>本地时间 <b id="clock">--:--:--</b></span>
+      <span>点首屏苹果咬一口 · 按 <b>*</b> 有彩蛋</span>
+      <button class="totop" id="toTop" data-cursor="回到顶部">回到顶部 ↑</button>
+    </div>
+  </div>
+</footer>
+
+<div class="eggtip" id="eggtip">彩蛋触发 ✳ 再按一次继续</div>
+<script>
+/* ---------- 工具 ---------- */
+const $=(s,el=document)=>el.querySelector(s);
+const $$=(s,el=document)=>[...el.querySelectorAll(s)];
+const lerp=(a,b,t)=>a+(b-a)*t;
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+
+/* ---------- 开场读数 ---------- */
+(function preload(){
+  const pl=$('#preloader'),num=$('.pl-num',pl),bar=$('.pl-bar i',pl);
+  let v=0;
+  const t=setInterval(()=>{
+    v=Math.min(100,v+Math.ceil((100-v)*0.12)+1);
+    num.textContent=String(v).padStart(2,'0');
+    bar.style.width=v+'%';
+    if(v>=100){
+      clearInterval(t);
+      setTimeout(()=>{
+        pl.classList.add('done');
+        document.body.classList.remove('lock');
+        $$('#hero .reveal').forEach(r=>{r.classList.add('in');setTimeout(()=>r.classList.add('done'),1100);});
+        $$('#hero .fade').forEach(r=>r.classList.add('in'));
+      },260);
+    }
+  },26);
+})();
+
+/* ---------- 自定义光标 ---------- */
+(function cursor(){
+  const dot=$('.cursor'),ring=$('.cursor-ring'),label=$('.clabel',dot);
+  let mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my;
+  addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;
+    dot.style.transform=`translate(${mx}px,${my}px) translate(-50%,-50%)`;
+    const d=e.target instanceof Element&&e.target.closest('#works,footer,#menu');
+    dot.classList.toggle('inv',!!d);ring.classList.toggle('inv',!!d);});
+  (function loop(){
+    rx=lerp(rx,mx,.14);ry=lerp(ry,my,.14);
+    ring.style.transform=`translate(${rx}px,${ry}px) translate(-50%,-50%)`;
+    requestAnimationFrame(loop);
+  })();
+  $$('[data-cursor]').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{dot.classList.add('big');label.textContent=el.dataset.cursor;});
+    el.addEventListener('mouseleave',()=>{dot.classList.remove('big');label.textContent='';});
+  });
+})();
+/* ---------- 菜单 ---------- */
+(function menu(){
+  const m=$('#menu');
+  $('#menuOpen').onclick=()=>m.classList.add('open');
+  $('#menuClose').onclick=()=>m.classList.remove('open');
+  $$('#menu a').forEach((a,i)=>{
+    a.style.transitionDelay=(.08*i+.15)+'s';
+    a.addEventListener('click',e=>{
+      e.preventDefault();
+      m.classList.remove('open');
+      const t=$(a.getAttribute('href'));
+      if(t)setTimeout(()=>t.scrollIntoView({behavior:'smooth'}),320);
+    });
+  });
+  addEventListener('keydown',e=>{if(e.key==='Escape')m.classList.remove('open');});
+})();
+
+/* ---------- 滚动进入 ---------- */
+(function reveals(){
+  const io=new IntersectionObserver(es=>{
+    es.forEach(e=>{if(e.isIntersecting){
+      e.target.classList.add('in');
+      if(e.target.classList.contains('reveal'))setTimeout(()=>e.target.classList.add('done'),1100);
+      io.unobserve(e.target);
+    }});
+  },{threshold:.2});
+  $$('.fade,.reveal').forEach(el=>{if(!el.closest('#hero'))io.observe(el);});
+  $$('.fade').forEach((el,i)=>el.style.transitionDelay=(i%4*.07)+'s');
+})();
+
+/* ---------- 标题逐字：hover 弹一下 ---------- */
+(function splitChars(){
+  const wrap=n=>{
+    const t=n.textContent;if(!t.trim())return;
+    const f=document.createDocumentFragment();
+    [...t].forEach(c=>{
+      if(c===' '){f.appendChild(document.createTextNode(' '));return;}
+      const s=document.createElement('span');s.className='ch';s.textContent=c;f.appendChild(s);
+    });
+    n.parentNode.replaceChild(f,n);
+  };
+  $$('.hero-title,.f-big,.spec-row .k').forEach(root=>{
+    [...root.querySelectorAll('*')].concat([root]).forEach(el=>{
+      [...el.childNodes].forEach(n=>{if(n.nodeType===3)wrap(n);});
+    });
+  });
+})();
+
+/* ---------- 侧边章节导航 + 顶部板块导航 ---------- */
+(function navs(){
+  const nav=$('#dots');if(!nav)return;
+  const links=$$('a',nav);
+  const secs=links.map(a=>$(a.getAttribute('href'))).filter(Boolean);
+  const tlinks=$$('#topnav a'),bar=$('#topbar');
+  [...links,...tlinks].forEach(a=>a.addEventListener('click',e=>{
+    e.preventDefault();const t=$(a.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth'});
+  }));
+  /* 以视口中线判断当前章节：比 IntersectionObserver 更适合超高的 sticky 区块 */
+  const dark=['#works','footer'];
+  const topIds=tlinks.map(a=>a.getAttribute('href'));
+  let lastAct=0,lastTop='';
+  const chk=()=>{
+    const mid=innerHeight*.5;
+    let cur=-1;
+    secs.forEach((s,i)=>{
+      const r=s.getBoundingClientRect();
+      if(r.top<=mid&&r.bottom>mid)cur=i;
+    });
+    if(cur<0)cur=lastAct;else lastAct=cur;
+    links.forEach((a,n)=>a.classList.toggle('act',n===cur));
+    const id=links[cur].getAttribute('href');
+    const atEnd=innerHeight+scrollY>=document.documentElement.scrollHeight-8;
+    if(atEnd)lastTop='#contact';
+    else if(topIds.includes(id))lastTop=id;
+    else if(id==='#hero')lastTop='';
+    tlinks.forEach(a=>a.classList.toggle('act',a.getAttribute('href')===lastTop));
+    bar.classList.toggle('float',scrollY>40);
+    const hit=dark.some(sel=>{
+      const el=$(sel);if(!el)return false;
+      const r=el.getBoundingClientRect();
+      return r.top<mid&&r.bottom>mid;
+    });
+    nav.classList.toggle('on-dark',hit);
+    $('.kbd').style.color=hit?'var(--cream)':'';
+  };
+  addEventListener('scroll',chk,{passive:true});addEventListener('resize',chk);chk();
+})();
+
+/* ---------- 跑马灯（滚动加速 + 方向反转） ---------- */
+(function marquee(){
+  const mqs=$$('.marquee').map((m,i)=>({el:$('.track',m),x:0,dir:i%2?1:-1,w:0}));
+  const measure=()=>mqs.forEach(o=>{o.w=o.el.scrollWidth/2;});
+  measure();addEventListener('resize',measure);
+  let last=scrollY,boost=0;
+  addEventListener('scroll',()=>{boost=clamp((scrollY-last)*.35,-40,40);last=scrollY;},{passive:true});
+  (function loop(){
+    boost=lerp(boost,0,.06);
+    mqs.forEach(o=>{
+      o.x+=o.dir*(0.9)+boost*o.dir*0.4;
+      if(o.w){ if(o.x<=-o.w)o.x+=o.w; if(o.x>0)o.x-=o.w; }
+      o.el.style.transform=`translate3d(${o.x}px,0,0)`;
+    });
+    requestAnimationFrame(loop);
+  })();
+})();
+/* ---------- 纵向滚动驱动横向陈列 ---------- */
+(function hgallery(){
+  const sec=$('#hscroll'),track=$('#htrack'),idx=$('#hIdx');
+  if(!sec)return;
+  let target=0,cur=0;
+  const calc=()=>{
+    const r=sec.getBoundingClientRect();
+    const total=sec.offsetHeight-innerHeight;
+    const p=clamp(-r.top/total,0,1);
+    const max=track.scrollWidth-innerWidth+innerWidth*.1;
+    target=-p*Math.max(max,0);
+    const n=Math.min(7,Math.floor(p*7)+1);
+    idx.textContent=String(n).padStart(2,'0');
+  };
+  addEventListener('scroll',calc,{passive:true});
+  addEventListener('resize',calc);calc();
+  /* 支持横向拖动（映射到纵向滚动） */
+  let dragging=false,lastX=0;
+  const stick=$('.hstick',sec);
+  stick.addEventListener('mousedown',e=>{if(e.target.closest('.card'))return;dragging=true;lastX=e.clientX;stick.style.cursor='grabbing';});
+  addEventListener('mousemove',e=>{
+    if(!dragging)return;
+    const dx=e.clientX-lastX;lastX=e.clientX;
+    scrollBy(0,-dx*1.35);
+  });
+  addEventListener('mouseup',()=>{dragging=false;stick.style.cursor='';});
+  (function loop(){
+    cur=lerp(cur,target,.09);
+    track.style.transform=`translate3d(${cur}px,0,0)`;
+    requestAnimationFrame(loop);
+  })();
+  /* 卡片跟随鼠标轻微倾斜 */
+  $$('.card').forEach(c=>{
+    c.addEventListener('mousemove',e=>{
+      const r=c.getBoundingClientRect();
+      const dx=(e.clientX-r.left)/r.width-.5, dy=(e.clientY-r.top)/r.height-.5;
+      c.style.transform=`perspective(900px) rotateY(${dx*9}deg) rotateX(${-dy*9}deg) translateZ(14px)`;
+    });
+    c.addEventListener('mouseleave',()=>{c.style.transition='transform .6s cubic-bezier(.16,1,.3,1)';
+      c.style.transform='none';setTimeout(()=>c.style.transition='',600);});
+    c.addEventListener('mouseenter',()=>c.style.transition='');
+  });
+})();
+
+/* ---------- 刮开揭示 ---------- */
+(function scratch(){
+  const stage=$('#scrStage'),back=$('#scrBack');
+  if(!stage)return;
+  let r=0,tr=0,x=50,y=50;
+  const move=(cx,cy)=>{
+    const b=stage.getBoundingClientRect();
+    x=((cx-b.left)/b.width)*100;y=((cy-b.top)/b.height)*100;tr=220;
+  };
+  stage.addEventListener('mousemove',e=>move(e.clientX,e.clientY));
+  stage.addEventListener('mouseleave',()=>tr=0);
+  stage.addEventListener('touchmove',e=>{const t=e.touches[0];move(t.clientX,t.clientY);},{passive:true});
+  stage.addEventListener('touchend',()=>tr=0);
+  (function loop(){
+    r=lerp(r,tr,.12);
+    back.style.setProperty('--x',x+'%');back.style.setProperty('--y',y+'%');
+    back.style.setProperty('--r',r+'px');
+    requestAnimationFrame(loop);
+  })();
+})();
+
+/* ---------- 认知圆盘：切换六层判断 ---------- */
+(function cognitionMap(){
+  const map=$('.think-map');if(!map)return;
+  const nodes=$$('.orbit-node',map),panels=$$('.detail-panel',map);
+  const core=map.querySelector('.orbit-core');
+  const stages=['assets/apple-whole.png','assets/apple-half.png','assets/apple-bitten.png','assets/apple-core.png'];
+  const labels={value:'价值',model:'边界',system:'编排',ux:'体验',eval:'验证',flywheel:'复利'};
+  const cleanBlackBg=(img)=>{
+    img.addEventListener('load',()=>{
+      const c=document.createElement('canvas'),w=img.naturalWidth,h=img.naturalHeight,ctx=c.getContext('2d');c.width=w;c.height=h;ctx.drawImage(img,0,0);
+      const d=ctx.getImageData(0,0,w,h),px=d.data,seen=new Uint8Array(w*h),stack=[];
+      for(let x=0;x<w;x++){stack.push(x,w*(h-1)+x)} for(let y=0;y<h;y++){stack.push(y*w,w-1+y*w)}
+      while(stack.length){const n=stack.pop();if(seen[n])continue;seen[n]=1;const i=n*4;if(px[i]<45&&px[i+1]<45&&px[i+2]<45){px[i+3]=0;const x=n%w,y=(n/w)|0;if(x)stack.push(n-1);if(x<w-1)stack.push(n+1);if(y)stack.push(n-w);if(y<h-1)stack.push(n+w)}}
+      ctx.putImageData(d,0,0);img.src=c.toDataURL('image/png');
+    },{once:true});
+  };
+  const value=map.querySelector('[data-panel="value"]');
+  if(value){
+    value.querySelector('.detail-lead').textContent='AI 产品的起点，是哪些任务值得被重新组织。';
+    value.querySelector('.detail-body').innerHTML='<strong>真正值得 AI 介入的，需要先看一件事：它能不能帮人把一件原本很慢、很难、很依赖经验的事，真正做得更好。</strong><br><br>客服、软件工程、销售运营之所以容易率先被 AI 改造，不只是因为它们有大量数据，而是因为任务经常发生，过程可以被记录，结果也能被验证：工单有没有解决，代码能不能通过测试，线索有没有转化。营销、电商、医药当然也有机会，但不能停留在“多生成一些内容”或“多给一个答案”，而要继续追问：它有没有改变决策，减少交接，缩短交付，或者让原本只有少数专家能完成的事，变得更多人都能完成？<br><br>所以我更关心的是 AI 有没有重新安排人与信息、工具和责任之间的关系。低价值的 AI，只是让原来的动作更快；真正有价值的 AI，会让一条原本昂贵、缓慢、依赖个人经验的工作，变得更容易完成，也更容易被验证和持续改进。';
+    if(!value.querySelector('.value-map-img')){const img=document.createElement('img');img.className='value-map-img';img.alt='从真实任务到长期价值的五步判断流程图';cleanBlackBg(img);img.src='assets/task-value-flow.png';value.querySelector('.detail-body').after(img);}
+  }
+  const model=map.querySelector('[data-panel="model"]');
+  if(model){
+    model.querySelector('.detail-lead').textContent='模型能力不是一个答案，而是一张带着边界、成本和失效方式的能力地图。';
+    model.querySelector('.detail-body').innerHTML='<strong>当前模型的发展，不是单线变强，而是能力形态分化。</strong>通用大语言模型在语言压缩、改写、代码生成和开放式问答上持续提升；推理模型用更多测试时计算换取数学、代码和规划能力，却把延迟、成本和过程可解释性带进产品；MoE 通过稀疏激活降低单位推理成本，但专家路由和长尾稳定性仍需单独验证。<br><br>多模态模型已经能把文字、图像、音频和视频放进同一任务，但在空间关系、计数、细粒度文字读取、跨模态引用和视频时间一致性上仍有高发失效；扩散与视频生成模型擅长提出视觉上合理的候选，却不自动保证角色连续、物理规律、因果关系或业务可执行。开源与闭源模型的差距也不再只体现在跑分，而体现在数据新鲜度、工具生态、部署成本、隐私和可调试性。<br><br>因此产品不能拿模型的最好一次表现做承诺，而要建立任务级能力剖面：在什么输入、上下文、温度、工具和时间预算下，成功率如何；哪些错误能被规则或验证器发现；哪些场景必须降级或交给人。<strong>模型选型的终点不是选出“最强模型”，而是让每一项产品承诺都有对应的能力证据和失败预案。</strong>';
+    if(!model.querySelector('.model-map-img')){const img=document.createElement('img');img.className='model-map-img';img.src='assets/model-boundary.png';img.alt='模型表现区间与失效尾部示意图';model.querySelector('.detail-body').after(img);}
+  }
+  const copy={
+    system:'模型不会因为接上更多工具，就自动变成一个更可靠的系统。现在这层真正发生的变化，是为模型安排一个可以行动、可以验证、也可以停下来的环境。RAG 要解决的不只是搜到内容，而是证据是否足以支持结论；Context Engineering 要决定这一轮任务究竟该保留什么、压缩什么、丢弃什么；Function Calling、Tools、MCP 和 Skills，则在重新定义模型可以怎样行动、调用什么能力，以及哪些动作必须被限制在边界内。<br><br>RAG 最容易被低估的地方，是检索结果“看起来相关”，却不一定真的能回答问题：切块可能切断语义，旧知识可能和新知识冲突，用户没有权限的信息可能在召回阶段就混进上下文，多跳问题又要求系统持续搜索、比对和回溯。Agentic RAG、GraphRAG、混合检索和重排，解决的是复杂任务中的证据组织；它们不能替代基础的数据治理、权限设计和知识更新。<br><br>编排层也不是把 Agent 的自主性开到最大。固定、可预测的任务，Workflow 往往比 Agent 更可靠；只有当步骤无法预先写死、每一步又能得到环境反馈时，才值得让模型动态规划。工具需要明确的输入输出、权限、超时、预算和回滚；Skills 需要触发条件、任务规程和验收标准；MCP 需要解决动态发现和安全边界。<strong>我真正关心的是模型能不能在需要的时候调用正确的能力，在不该继续的时候及时停下来。</strong>',
+    ux:'在我的理解中，设计一个 AI 产品，首先要把<strong>用户真正想完成的事情</strong>想清楚。任务从哪里开始，中间要经过哪些判断，最后怎样才算完成。只有先把这条路径理顺，才知道<strong>AI 应该参与哪一步、提供什么帮助</strong>。它可以帮用户找资料、整理信息、提出方案，也可以继续往下执行，但每一步都需要对应清楚的依据和验收方式。<br><br>接下来要处理的是使用过程。用户需要知道系统现在做到哪里，为什么给出这个结果，自己还能修改什么。简单的任务可以让系统自动完成更多步骤，复杂的任务要留下中间结果，让用户随时调整方向。涉及付款、发布、诊断、审批这类高风险动作时，系统要把影响范围和责任边界交代清楚，并且给人留下<strong>确认、暂停和撤回</strong>的机会。<br><br>我会把 AI 产品看成几层同时工作的东西：底层是<strong>模型、数据和工具</strong>，中间是<strong>任务流程、状态和规则</strong>，表面是输入、反馈、编辑和协作体验。产品设计要做的，就是让这几层彼此对得上。模型能做到的地方，系统要把它用得稳定；模型不确定的地方，体验要把不确定性说清楚；系统出现问题时，用户要有可以继续推进的退路。<br><br>最后还要回到真实使用里检验。用户接受了什么、改了什么、放弃了什么，都会告诉我这项设计哪里有效、哪里增加了负担。好的 AI 产品会在一次次使用中变得更贴近任务，也让用户越来越清楚什么可以交给系统，什么仍然需要自己判断。',
+    eval:'<strong>评测要从用户要完成的任务开始。</strong>先把什么算完成、哪些错误绝对不能发生写清楚，再去建立一组能代表真实使用的样本：日常任务看系统平时好不好用，长尾任务看能力边界，对抗和高风险任务看它能不能在关键地方守住底线。<br><br>一套评测也不能只盯着模型答案。模型要看质量和稳定性，RAG 要看证据能不能支持结论，应用要看用户是否真的完成了任务，Agent 还要看它选了什么工具、走了哪些步骤、有没有绕路、误调用、越权或陷入循环。不同的问题，需要不同的评分方式：规则能判断的交给代码，开放的质量交给模型评审，涉及责任和偏好的部分留给人。<br><br>评测会贯穿整个产品周期：改动前先跑回归，发布时做灰度，上线后看真实日志。每一次被确认的失败，都要留下它发生的上下文、失败原因和修复标准，再回到评测集里。这样下一次换模型、改 Prompt、更新知识库或增加工具时，团队才知道系统有没有真的变好。',
+    flywheel:'反馈是产品下一轮进化的原材料。用户接受、修改、拒绝、重试、放弃或转交人工，背后对应的原因并不一样：可能是意图没理解，证据没找对，答案不可信，工具不好用，也可能是这一步本来就不该交给 AI。<br><br>我会先把这些信号放回具体任务里，结合上下文和最终结果做归因，再决定它应该进入评测集、产品规则、知识库、Prompt、训练数据，还是模型选择。一次偶发的不满不值得立刻改模型；反复出现、能够稳定复现并且影响结果的失败，才值得变成下一轮发布必须通过的测试。<br><br>这样积累下来的不是一堆“用户反馈”，而是一套越来越准确的判断：什么任务可以交给系统，什么地方需要人工接管，哪些流程正在变得更快、更稳定，也越来越难被别的产品直接复制。'
+  };
+  Object.entries(copy).forEach(([key,text])=>{const p=map.querySelector('[data-panel="'+key+'"] .detail-body');if(p)p.innerHTML=text;});
+  const ux=map.querySelector('[data-panel="ux"]');
+  if(ux){ux.querySelector('.detail-title').textContent='产品设计的核心，始终是用户';ux.querySelector('.detail-lead').textContent='用户购买的不是“用了 AI”，而是这次能不能拿到结果。';}
+  const evalPanel=map.querySelector('[data-panel="eval"]');
+  if(evalPanel)evalPanel.querySelector('.detail-ask').textContent='我会问：这次改动改善了哪一个真实任务，又带来了什么新的 badcase？';
+  const system=map.querySelector('[data-panel="system"]');
+  if(system&&!system.querySelector('.system-map-img')){const img=document.createElement('img');img.className='system-map-img';img.alt='证据与上下文、模型、行动与工具、验证与停止的编排流程图';cleanBlackBg(img);img.src='assets/system-orchestration.png';system.querySelector('.detail-body').after(img);}
+  nodes.forEach(node=>node.addEventListener('click',()=>{
+    const key=node.dataset.detail;
+    nodes.forEach(n=>n.classList.toggle('active',n===node));
+    panels.forEach(p=>p.classList.toggle('active',p.dataset.panel===key));
+    map.dataset.focus=key;
+    if(core){core.style.setProperty('--apple-stage',`url(${stages[Math.max(0,nodes.indexOf(node)%4)]})`);core.dataset.label=labels[key]||'';core.classList.remove('pulse');void core.offsetWidth;core.classList.add('pulse');}
+  }));
+  let px=0,py=0,cx=0,cy=0;
+  map.addEventListener('pointermove',e=>{const r=map.getBoundingClientRect();px=((e.clientX-r.left)/r.width-.5)*8;py=((e.clientY-r.top)/r.height-.5)*8;},{passive:true});
+  map.addEventListener('pointerleave',()=>{px=0;py=0;});
+  (function tilt(){cx+=(px-cx)*.08;cy+=(py-cy)*.08;const orbit=map.querySelector('.orbit');if(orbit)orbit.style.transform=`perspective(900px) rotateX(${-cy*.35}deg) rotateY(${cx*.35}deg)`;requestAnimationFrame(tilt)})();
+})();
+
+/* ---------- 小票打印 ---------- */
+(function receipt(){
+  const r=$('#receipt');if(!r)return;
+  new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)r.classList.add('print');}),
+    {threshold:.25}).observe(r);
+})();
+
+/* ---------- 文字乱码切换 ---------- */
+(function scramble(){
+  const chars='アイウ0123456789*#%&@ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  $$('.scramble').forEach(el=>{
+    const real=el.dataset.text;let t=null;
+    const run=()=>{
+      let f=0;clearInterval(t);
+      t=setInterval(()=>{
+        el.textContent=real.split('').map((c,i)=>{
+          if(c===' ')return' ';
+          if(i<f)return real[i];
+          return chars[Math.floor(Math.random()*chars.length)];
+        }).join('');
+        f+=1/2;
+        if(f>=real.length){clearInterval(t);el.textContent=real;}
+      },34);
+    };
+    el.addEventListener('mouseenter',run);
+    new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)run();}),{threshold:.8}).observe(el);
+  });
+})();
+/* ---------- 贴纸拖拽 + 惯性 ---------- */
+(function drag(){
+  $$('.sticker').forEach((s,i)=>{
+    const st={x:0,y:0,vx:0,vy:0,rot:(i%2?-4:5),drag:false,px:0,py:0,idle:Math.random()*6,moved:0};
+    const apply=()=>s.style.transform=`translate3d(${st.x}px,${st.y}px,0) rotate(${st.rot}deg)`;
+    apply();
+    const down=(cx,cy)=>{st.drag=true;st.px=cx;st.py=cy;st.vx=st.vy=0;st.moved=0;s.style.zIndex=99;
+      s.style.boxShadow='0 26px 50px rgba(21,19,17,.22)';};
+    const move=(cx,cy)=>{
+      if(!st.drag)return;
+      const dx=cx-st.px,dy=cy-st.py;
+      st.x+=dx;st.y+=dy;st.vx=dx;st.vy=dy;st.px=cx;st.py=cy;st.moved+=Math.abs(dx)+Math.abs(dy);
+      st.rot=clamp(st.rot+dx*.12,-24,24);apply();
+    };
+    const up=()=>{st.drag=false;s.style.boxShadow='';};
+    /* 拖动过就不要触发里面的链接 */
+    s.addEventListener('click',e=>{if(st.moved>6){e.preventDefault();e.stopPropagation();}},true);
+    s.addEventListener('mousedown',e=>{e.preventDefault();down(e.clientX,e.clientY);});
+    addEventListener('mousemove',e=>move(e.clientX,e.clientY));
+    addEventListener('mouseup',up);
+    s.addEventListener('touchstart',e=>down(e.touches[0].clientX,e.touches[0].clientY),{passive:true});
+    s.addEventListener('touchmove',e=>move(e.touches[0].clientX,e.touches[0].clientY),{passive:true});
+    s.addEventListener('touchend',up);
+    (function loop(){
+      if(!st.drag){
+        st.x+=st.vx;st.y+=st.vy;st.vx*=.93;st.vy*=.93;
+        st.idle+=.012;
+        st.y+=Math.sin(st.idle)*.22;
+        st.rot=lerp(st.rot,(i%2?-4:5),.03);
+        if(Math.abs(st.vx)<.01)st.vx=0;
+        if(Math.abs(st.vy)<.01)st.vy=0;
+        apply();
+      }
+      requestAnimationFrame(loop);
+    })();
+  });
+})();
+
+/* ---------- 主视觉视差 ---------- */
+(function parallax(){
+  const f=$('#fruit');if(!f)return;
+  let tx=0,ty=0,cx=0,cy=0;
+  addEventListener('mousemove',e=>{tx=(e.clientX/innerWidth-.5)*46;ty=(e.clientY/innerHeight-.5)*30;});
+  addEventListener('scroll',()=>{f.style.setProperty('--sy',scrollY*.06+'px');},{passive:true});
+  (function loop(){
+    cx=lerp(cx,tx,.06);cy=lerp(cy,ty,.06);
+    f.style.marginLeft=cx+'px';f.style.marginTop=cy+'px';
+    requestAnimationFrame(loop);
+  })();
+})();
+/* ---------- 磁吸按钮 ---------- */
+(function magnet(){
+  $$('.magnet').forEach(el=>{
+    el.addEventListener('mousemove',e=>{
+      const r=el.getBoundingClientRect();
+      el.style.transform=`translate(${(e.clientX-r.left-r.width/2)*.22}px,${(e.clientY-r.top-r.height/2)*.32}px)`;
+    });
+    el.addEventListener('mouseleave',()=>{
+      el.style.transition='transform .5s cubic-bezier(.16,1,.3,1)';
+      el.style.transform='none';setTimeout(()=>el.style.transition='',500);
+    });
+    el.addEventListener('mouseenter',()=>el.style.transition='');
+  });
+})();
+
+/* ---------- 进度条 / 苹果进度 / 时钟 / 回顶 ---------- */
+(function misc(){
+  const p=$('#prog'),ap=$('#appleProg'),stack=$('#appleStack'),pct=$('#applePct');
+  const imgs=$$('img',stack);
+  const stages=['刚开始','切一半','吃掉大半','只剩核了'];
+  let cur=-1;
+  const upd=()=>{
+    const h=document.documentElement.scrollHeight-innerHeight;
+    const r=h>0?clamp(scrollY/h,0,1):0;
+    p.style.width=r*100+'%';
+    ap.classList.toggle('show',r>.02);
+    const i=r<.28?0:r<.58?1:r<.86?2:3;
+    if(i!==cur){
+      cur=i;
+      imgs.forEach((im,n)=>im.classList.toggle('on',n===i));
+      pct.textContent=stages[i];
+      stack.classList.remove('pop');void stack.offsetWidth;stack.classList.add('pop');
+    }
+  };
+  addEventListener('scroll',upd,{passive:true});addEventListener('resize',upd);upd();
+  const c=$('#clock');
+  const tick=()=>{const d=new Date();
+    c.textContent=[d.getHours(),d.getMinutes(),d.getSeconds()].map(n=>String(n).padStart(2,'0')).join(':');};
+  tick();setInterval(tick,1000);
+  $('#toTop').onclick=()=>scrollTo({top:0,behavior:'smooth'});
+})();
+
+/* ---------- 彩蛋：星花喷射 ---------- */
+(function egg(){
+  const tip=$('#eggtip');
+  const SVG=`<svg viewBox="0 0 100 100"><path fill="#EF4B4C" d="M50 2c9 0 13 14 8 30 11-12 24-19 30-13s-1 19-17 24c16 5 23 18 17 24s-19-1-30-13c5 16 1 30-8 30s-13-14-8-30c-11 12-24 19-30 13s1-19 17-24C4 38-3 25 3 19s19 1 30 13C28 16 41 2 50 2z"/></svg>`;
+  const burst=(ox,oy)=>{
+    for(let i=0;i<26;i++){
+      const d=document.createElement('div');
+      d.className='confetti';d.innerHTML=SVG;
+      d.style.left=ox+'px';d.style.top=oy+'px';
+      document.body.appendChild(d);
+      let vx=(Math.random()-.5)*18,vy=-Math.random()*16-6,x=0,y=0,rot=0,life=0;
+      const sz=8+Math.random()*22;d.style.width=d.style.height=sz+'px';
+      (function fly(){
+        life++;vy+=.55;x+=vx;y+=vy;rot+=vx*1.4;
+        d.style.transform=`translate(${x}px,${y}px) rotate(${rot}deg)`;
+        d.style.opacity=String(Math.max(0,1-life/90));
+        if(life<95)requestAnimationFrame(fly);else d.remove();
+      })();
+    }
+    tip.textContent='彩蛋触发 ✳ 再来一次';
+    tip.classList.add('show');clearTimeout(egg._t);
+    egg._t=setTimeout(()=>tip.classList.remove('show'),1800);
+  };
+  addEventListener('keydown',e=>{if(e.key==='*'||e.key==='8'&&e.shiftKey)burst(innerWidth/2,innerHeight*.8);});
+  $$('.s-ast,.brand .ast').forEach(el=>el.addEventListener('click',e=>burst(e.clientX,e.clientY)));
+  window.__burst=burst;
+  window.__toast=(msg)=>{
+    tip.textContent=msg;tip.classList.add('show');clearTimeout(egg._t2);
+    egg._t2=setTimeout(()=>tip.classList.remove('show'),1900);
+  };
+})();
+
+/* ---------- 经历列表左侧的苹果游标 ---------- */
+(function specRail(){
+  const list=$('#specList'),rail=$('#specRail');if(!list||!rail)return;
+  const img=$('img',rail);
+  const states=['assets/apple-whole.png','assets/apple-half.png','assets/apple-bitten.png','assets/apple-core.png'];
+  let cur=-1,target=0,pos=0;
+  const calc=()=>{
+    const r=list.getBoundingClientRect();
+    const p=clamp((innerHeight*.75-r.top)/(r.height+innerHeight*.25),0,1);
+    target=p*Math.max(r.height-30,0);
+    const i=Math.min(3,Math.floor(p*3.99));
+    if(i!==cur){cur=i;img.src=states[i];}
+  };
+  addEventListener('scroll',calc,{passive:true});addEventListener('resize',calc);calc();
+  (function loop(){
+    pos=lerp(pos,target,.1);
+    rail.style.transform=`translateY(${pos}px)`;
+    requestAnimationFrame(loop);
+  })();
+})();
+
+/* ---------- 经历条目：点击展开 + 首屏红字跳转联动 ---------- */
+(function expRows(){
+  const rows=$$('.spec-row');
+  rows.forEach(r=>r.addEventListener('click',()=>{
+    const on=r.classList.contains('open');
+    rows.forEach(x=>x.classList.remove('open'));
+    if(!on)r.classList.add('open');
+  }));
+  $$('.hero-intro .jb').forEach(a=>a.addEventListener('click',e=>{
+    e.preventDefault();
+    const t=$(a.getAttribute('href'));if(!t)return;
+    rows.forEach(x=>x.classList.remove('open'));
+    t.classList.add('open');
+    const y=t.getBoundingClientRect().top+scrollY-innerHeight*.3;
+    scrollTo({top:y,behavior:'smooth'});
+  }));
+})();
+
+/* ---------- 咬一口：点首屏苹果 ---------- */
+(function bite(){
+  const f=$('#fruit'),toast=$('#biteToast');if(!f)return;
+  const apples=$$('.apple',f);
+  const words=['一天一苹果 · bug 远离我','再来一口','吃完啦 ☺'];
+  let st=0,t=null;
+  const show=(i)=>{apples.forEach((a,n)=>a.classList.toggle('on',n===i));};
+  f.addEventListener('click',e=>{
+    st=(st+1)%3;show(st);
+    f.classList.remove('chew');void f.offsetWidth;f.classList.add('chew');
+    toast.textContent=words[st-1]||'长回来了';
+    toast.classList.add('show');
+    if(window.__burst)window.__burst(e.clientX,e.clientY);
+    clearTimeout(t);
+    t=setTimeout(()=>{
+      toast.classList.remove('show');
+      if(st===2){st=0;show(0);toast.textContent='又长回来了';
+        toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1400);}
+    },1600);
+  });
+})();
+
+/* ---------- 键盘 1-6 跳章节 ---------- */
+(function keys(){
+  const map=['#hero','#spec','#works','#scratch','#contact'];
+  const names=['封面','经历','项目作品','思考','联系我'];
+  addEventListener('keydown',e=>{
+    if(e.metaKey||e.ctrlKey||e.altKey)return;
+    const i=parseInt(e.key,10)-1;
+    if(!(i>=0&&i<map.length))return;
+    const t=$(map[i]);if(!t)return;
+    t.scrollIntoView({behavior:'smooth'});
+    if(window.__toast)window.__toast('跳到 0'+(i+1)+' '+names[i]);
+  });
+})();
+</script>
+</body>
+</html>
