@@ -536,10 +536,10 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 .detail-panel[data-panel="ux"] .detail-ask::before{content:"产品体验不该只讨论“控制权”，而要分四层设计：价值层回答用户为什么要用、结果如何被验收；体验层处理输入、等待、预览、解释、修改和协作；控制层决定用户能改结果、步骤、参数还是工具权限；责任层规定哪些动作自动执行、哪些必须确认、失败由谁接管。低风险、可逆任务可以隐藏复杂度，高风险、不可逆任务必须让状态、依据、影响范围和撤回路径可见。Agent 的自主性不是越高越好，而是随着可验证性和可逆性一起增长。"}
 .detail-panel[data-panel="eval"] .detail-ask::before{content:"评测要按产品层级执行，而不是拿一个模型分数代替一切：第一步定义任务契约和不可接受失败；第二步按真实流量建立 Golden Set、长尾集、对抗集和回归集，并标注难度、来源、权限和风险；第三步分别评模型输出、检索证据、Tool 参数、Agent 轨迹、最终任务结果和人工接管；第四步用规则/代码评测确定性指标，用模型评审处理开放质量，用人工评审处理责任与偏好；第五步做离线回归、影子流量、灰度和线上监控。模型评测看能力，应用评测看任务，Agent 评测还要看路径是否绕路、误调用、越权、循环和成本失控。"}
 .detail-panel[data-panel="flywheel"] .detail-ask::before{content:"反馈要先被分类，才可能形成资产：接受、修改、拒绝、重试、放弃和人工接管分别代表不同信号；再把问题归因到意图、上下文、检索、生成、Tool、交互或业务流程。高置信的重复失败进入回归集和规则，稳定的偏好差异进入评测标准，新的领域事实进入知识库，只有确认是模型能力缺口时才进入训练或模型选择。这样闭环的目标不是“数据越多越好”，而是每次使用都降低下一次的判断成本、人工成本和错误成本，最终形成工作流与责任链的迁移壁垒。"}
-.value-map-img{display:block;width:100%;height:auto;margin-top:24px;border:1px solid rgba(21,19,17,.16);border-radius:4px;background:var(--paper);box-shadow:5px 5px 0 rgba(21,19,17,.12)}
+.value-map-img{display:block;width:min(100%,420px);height:auto;margin:20px 0 0;border:1px solid rgba(21,19,17,.16);border-radius:4px;background:var(--paper);box-shadow:4px 4px 0 rgba(21,19,17,.10)}
 .detail-panel[data-panel="value"] .detail-ask::before,.detail-panel[data-panel="model"] .detail-ask::before,.detail-panel[data-panel="system"] .detail-ask::before,.detail-panel[data-panel="ux"] .detail-ask::before,.detail-panel[data-panel="eval"] .detail-ask::before,.detail-panel[data-panel="flywheel"] .detail-ask::before{display:none}
-.model-map-img{display:block;width:100%;height:auto;margin-top:24px;border:1px solid rgba(21,19,17,.16);border-radius:4px;background:var(--paper);box-shadow:5px 5px 0 rgba(21,19,17,.12)}
-.system-map-img{display:block;width:100%;height:auto;margin-top:24px;border:1px solid rgba(21,19,17,.16);border-radius:4px;background:var(--paper);box-shadow:5px 5px 0 rgba(21,19,17,.12)}
+.model-map-img{display:block;width:min(100%,400px);height:auto;margin:20px 0 0;border:1px solid rgba(21,19,17,.16);border-radius:4px;background:var(--paper);box-shadow:4px 4px 0 rgba(21,19,17,.10)}
+.system-map-img{display:block;width:min(100%,380px);height:auto;margin:20px 0 0;border:1px solid rgba(21,19,17,.16);border-radius:4px;background:var(--paper);box-shadow:4px 4px 0 rgba(21,19,17,.10)}
 .deep-grid{display:none!important}
 .deep-card{background:var(--paper);padding:24px 22px 22px;min-height:310px}
 .deep-card:nth-child(even){background:var(--cream)}
@@ -715,6 +715,7 @@ footer{background:var(--ink);color:var(--cream);padding:9vh 0 4vh;overflow:hidde
   .value-map-img,.model-map-img,.system-map-img{margin-top:16px}
 }
 @media(max-width:600px){
+  .value-map-img,.model-map-img,.system-map-img{width:100%;max-width:none}
   .sect{padding:12vh 0}
   .hstick{gap:2vh}
   .hhead{padding:0 7vw;align-items:flex-start;gap:12px}
